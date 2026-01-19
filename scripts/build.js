@@ -9,17 +9,46 @@ nunjucks.configure(path.join(__dirname, '../src'), {
   lstripBlocks: false
 });
 
-// Read components
-function readComponent(filename) {
-  const filepath = path.join(__dirname, '../components', filename);
-  if (!fs.existsSync(filepath)) {
-    console.warn(`Warning: Component ${filename} not found`);
-    return '';
-  }
-  return fs.readFileSync(filepath, 'utf8');
+// === HELPER: Convert kebab-case to camelCase ===
+function toCamelCase(str) {
+  return str
+    .replace(/\.[^/.]+$/, '') // Remove file extension
+    .replace(/_([a-z])/g, (match) => match[1].toUpperCase()); // day_banner → dayBanner
 }
 
-// Ensure output directory exists
+// === HELPER: Auto-discover and read all components ===
+function discoverComponents() {
+  const componentsDir = path.join(__dirname, '../components');
+  const components = {};
+
+  if (!fs.existsSync(componentsDir)) {
+    console.error(`Components directory not found: ${componentsDir}`);
+    return components;
+  }
+
+  const files = fs.readdirSync(componentsDir);
+
+  files.forEach(file => {
+    // Only include .html and .css files
+    if (!file.endsWith('.html') && !file.endsWith('.css')) {
+      return;
+    }
+
+    try {
+      const filepath = path.join(componentsDir, file);
+      const content = fs.readFileSync(filepath, 'utf8');
+      const variableName = toCamelCase(file);
+      components[variableName] = content;
+      console.log(`  ✓ Loaded: ${file} → {{ ${variableName} }}`);
+    } catch (err) {
+      console.error(`  ✗ Error reading ${file}:`, err.message);
+    }
+  });
+
+  return components;
+}
+
+// === HELPER: Ensure output directory exists ===
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
@@ -41,6 +70,11 @@ function buildTemplates() {
     return;
   }
 
+  // Auto-discover components
+  console.log('🔍 Auto-discovering components...\n');
+  const components = discoverComponents();
+  console.log(`\n✨ Found ${Object.keys(components).length} component(s)\n`);
+
   // Read all .njk files
   const templates = fs.readdirSync(srcDir).filter(f => f.endsWith('.njk'));
 
@@ -49,33 +83,28 @@ function buildTemplates() {
     return;
   }
 
-  console.log(`Found ${templates.length} template(s) to build...\n`);
+  console.log(`📋 Building ${templates.length} template(s)...\n`);
 
   templates.forEach(template => {
-    console.log(`Building ${template}...`);
+    console.log(`  ⚙️  ${template}`);
     
     try {
-      // Render template with component data
-      const html = nunjucks.render(`templates/${template}`, {
-        hero: readComponent('hero.html'),
-        dayBanner: readComponent('day_banner.html'),
-        tourBanner: readComponent('tour_banner.html'),
-        threeColumns: readComponent('3_columns.html'),
-        styles: readComponent('styles.css')
-      });
+      // Render template with auto-discovered components
+      const html = nunjucks.render(`templates/${template}`, components);
 
       // Write output
       const outputName = template.replace('.njk', '.html');
       const outputPath = path.join(outDir, outputName);
       fs.writeFileSync(outputPath, html, 'utf8');
       
-      console.log(`✓ ${outputName} created (${(html.length / 1024).toFixed(1)} KB)\n`);
+      const sizeKB = (Buffer.byteLength(html, 'utf8') / 1024).toFixed(2);
+      console.log(`     ✅ ${outputName} (${sizeKB} KB)\n`);
     } catch (err) {
-      console.error(`✗ Error building ${template}: ${err.message}\n`);
+      console.error(`     ✗ Error:`, err.message, '\n');
     }
   });
 
-  console.log('Build complete! Output files in /Test directory.\n');
+  console.log('✨ Build complete!\n');
 }
 
 // Run build
