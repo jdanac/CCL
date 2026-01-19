@@ -75,8 +75,9 @@ function buildTemplates() {
   const components = discoverComponents();
   console.log(`\n✨ Found ${Object.keys(components).length} component(s)\n`);
 
-  // Read all .njk files
-  const templates = fs.readdirSync(srcDir).filter(f => f.endsWith('.njk'));
+  // Read all .njk files (skip files starting with _ or .)
+  const templates = fs.readdirSync(srcDir)
+    .filter(f => f.endsWith('.njk') && !f.startsWith('_') && !f.startsWith('.'));
 
   if (templates.length === 0) {
     console.warn(`No .njk templates found in ${srcDir}`);
