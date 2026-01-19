@@ -1,0 +1,27 @@
+{
+  "name": "ccl-email-templates",
+  "version": "1.0.0",
+  "description": "Celebrity Cruises Email Template Components & Build System",
+  "main": "scripts/build.js",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "watch": "nodemon scripts/build.js",
+    "clean": "rm -rf Test"
+  },
+  "keywords": [
+    "email",
+    "templates",
+    "components",
+    "nunjucks",
+    "responsive"
+  ],
+  "author": "Celebrity Cruises",
+  "license": "PROPRIETARY",
+  "devDependencies": {
+    "nunjucks": "^3.2.3",
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
