@@ -32,21 +32,21 @@ CCL/
 │   ├── hero.html              # Full-width hero banner
 │   ├── day_banner.html        # Location/day info with activities
 │   ├── tour_banner.html       # 2-column image + content layout
-│   └── 3_columns.html         # 3-column card layout
+│   └── three_columns.html         # 3-column card layout
 │
 ├── src/
-│   └── templates/             # Nunjucks template sources
+│   └── templates/             # Nunjucks template sources (git ignored)
 │       ├── component_showcase.njk  # Full component showcase
 │       ├── agent_test.njk          # Test template with all components
-│       └── showcase.njk             # Alternative layout
+│       ├── showcase.njk             # Alternative layout
+│       └── _boilerplate.njk        # Starter template (not built)
 │
-├── Test/                       # Auto-generated HTML output (do not edit)
+├── Test/                       # Auto-generated HTML output (git ignored)
 │   ├── component_showcase.html
 │   ├── agent_test.html
 │   └── showcase.html
 │
-├── Template/                   # DEPRECATED - old manual templates
-│   └── (ignore - replaced by build system)
+├── Template_deprecated/        # DEPRECATED - old manual templates (git ignored)
 │
 ├── scripts/
 │   └── build.js               # Build script - assembles templates
@@ -56,6 +56,14 @@ CCL/
 ├── .gitignore                 # Git ignore rules
 └── README.md                  # This file
 ```
+
+**Git Ignored Folders:**
+- `/src/templates/` - Template sources (not tracked in git)
+- `/Test/` - Auto-generated build output (not tracked in git)
+- `/Template_deprecated/` - Legacy templates folder (not tracked in git)
+- `/node_modules/` - Dependencies (not tracked in git)
+
+**Note:** Only `/components/` folder and configuration files are tracked in git.
 
 ---
 
@@ -320,7 +328,7 @@ Gmail uses `[data-ogsc]` selector for dark mode:
 
 ### Component Maintenance
 
-1. **Update components, not templates** - Edit `components/3_columns.html`, not individual template files
+1. **Update components, not templates** - Edit `components/three_columns.html`, not individual template files
 2. **Run build after changes** - `npm run build` regenerates all affected templates
 3. **Keep components focused** - One component = one logical section
 4. **Use semantic HTML** - Stick with HTML 4.01 for maximum compatibility
@@ -357,7 +365,7 @@ Gmail uses `[data-ogsc]` selector for dark mode:
 **Goal:** Update 3-column layout, have changes appear in all templates
 
 **Steps:**
-1. Edit `components/3_columns.html`
+1. Edit `components/three_columns.html`
 2. Run `npm run build` (or save if `npm run watch` is running)
 3. All templates that use `{{ threeColumns }}` regenerate automatically
 
@@ -477,7 +485,7 @@ For questions about:
 | `components/hero.html` | Hero banner | Active |
 | `components/day_banner.html` | Day info banner | Active |
 | `components/tour_banner.html` | 2-column layout | Active |
-| `components/3_columns.html` | 3-column cards | Active |
+| `components/three_columns.html` | 3-column cards | Active |
 | `scripts/build.js` | Build automation | Active |
 | `src/templates/*.njk` | Template sources | Active |
 | `Test/` | Generated output | Auto-generated |
