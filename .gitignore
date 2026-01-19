@@ -1,6 +1,9 @@
 # Auto-generated build output
 /Test/
 
+# src templates
+/src/templates/
+
 # Deprecated folders
 /Template_DEPRECATED/
 
