@@ -1,21 +1,6 @@
-# Celebrity Cruises Email Template System
+# CCL Email Template System
 
-A modular, component-based email template system for Celebrity Cruises shore excursion emails. Built with Nunjucks templating engine for automated component assembly and easy maintenance.
-
-## 📋 Table of Contents
-
-- [Project Overview](#project-overview)
-- [Folder Structure](#folder-structure)
-- [Getting Started](#getting-started)
-- [Build System](#build-system)
-- [Creating Templates](#creating-templates)
-- [Component Reference](#component-reference)
-- [CSS Classes & Styling](#css-classes--styling)
-- [Responsive Design](#responsive-design)
-- [Dark Mode Support](#dark-mode-support)
-- [Best Practices](#best-practices)
-- [Workflow Examples](#workflow-examples)
-- [Troubleshooting](#troubleshooting)
+A modular, component-based email template system for Celebrity emails. Built with Nunjucks templating engine for automated component assembly and easy maintenance.
 
 ---
 
@@ -35,7 +20,6 @@ This system solves the manual template maintenance problem by:
 - **CSS**: Responsive design with mobile breakpoint at 600px
 - **Templating**: Nunjucks (`.njk` files)
 - **Build Tool**: Node.js + npm scripts
-- **Email Compatibility**: Gmail, Outlook, Apple Mail, SFMC
 
 ---
 
@@ -66,6 +50,7 @@ CCL/
 │
 ├── scripts/
 │   └── build.js               # Build script - assembles templates
+│   └── test.js                # Test script
 │
 ├── package.json               # npm configuration
 ├── .gitignore                 # Git ignore rules
@@ -109,7 +94,7 @@ CCL/
      ✅ Output: showcase.html (4.65 KB)
    
    ✨ Build complete!
-   📁 Output files in: /Users/jorgeacuna/Documents/GitHub/CCL/Test/
+   
    ```
 
 ---
@@ -160,7 +145,7 @@ Component files use **kebab-case with underscores**, but are called in templates
 | `hero.html` | `{{ hero }}` |
 | `day_banner.html` | `{{ dayBanner }}` |
 | `tour_banner.html` | `{{ tourBanner }}` |
-| `3_columns.html` | `{{ threeColumns }}` |
+| `three_columns.html` | `{{ threeColumns }}` |
 | `styles.css` | `{{ styles }}` |
 
 ### How the Mapping Works
@@ -175,7 +160,7 @@ const components = discoverComponents();
 // hero.html           → {{ hero }}
 // day_banner.html     → {{ dayBanner }}
 // tour_banner.html    → {{ tourBanner }}
-// 3_columns.html      → {{ threeColumns }}
+// three_columns.html      → {{ threeColumns }}
 // styles.css          → {{ styles }}
 ```
 
@@ -217,7 +202,7 @@ The output will show:
   ✓ Loaded: hero.html → {{ hero }}
   ✓ Loaded: day_banner.html → {{ dayBanner }}
   ✓ Loaded: tour_banner.html → {{ tourBanner }}
-  ✓ Loaded: 3_columns.html → {{ threeColumns }}
+  ✓ Loaded: three_columns.html → {{ threeColumns }}
   ✓ Loaded: styles.css → {{ styles }}
   ✓ Loaded: testimonials.html → {{ testimonials }}  ← Your new component!
 ```
@@ -305,73 +290,6 @@ Open the generated HTML file in:
 
 ---
 
-## 🧩 Component Reference
-
-### styles.css
-**Purpose:** Master stylesheet for all emails
-
-**Key Classes:**
-- `.container` - Fixed 600px width (fluid on mobile)
-- `.responsive-td` - Table cell that stacks on mobile
-- `.buttonstyles` - Unified button styling (orange, inline-block)
-- `.button-cell` - Button container (prevents 100% expansion)
-- `.textC` - Center text on mobile
-- `.darkModeBG` - Dark mode background support
-
-**File Size:** ~3.2 KB
-
-### hero.html
-**Purpose:** Full-width hero banner with linked image
-
-**Structure:**
-- Single table with `.container` class
-- Responsive image (100% width on mobile, 600px on desktop)
-- Image wrapped in `<a>` tag for link tracking
-
-**File Size:** ~0.8 KB
-
-**Use When:** You need a prominent opening banner with image
-
-### day_banner.html
-**Purpose:** Location and day information with activities
-
-**Structure:**
-- Dark blue background (#002859)
-- Left: Day icon + location name
-- Right: BOOK NOW CTA button
-- Bottom: Activity list with icons
-
-**File Size:** ~1.5 KB
-
-**Use When:** Showing day-specific information with activities
-
-### tour_banner.html
-**Purpose:** 2-column layout (image + content)
-
-**Structure:**
-- Left column (40%): Image with link
-- Right column (60%): Title, duration, description, BOOK NOW button
-- Stacks vertically on mobile
-
-**File Size:** ~1.8 KB
-
-**Use When:** Showcasing a single tour with image and details
-
-### 3_columns.html
-**Purpose:** 3-column card layout for multiple options
-
-**Structure:**
-- Three equal-width columns
-- Each: Image (180px) + title + description + BOOK NOW button
-- Stacks vertically on mobile
-- Buttons maintain fixed width on mobile (not 100%)
-
-**File Size:** ~3.1 KB
-
-**Use When:** Displaying 3 comparable tour options
-
----
-
 ##  Dark Mode Support
 
 ### How It Works
@@ -395,12 +313,6 @@ Gmail uses `[data-ogsc]` selector for dark mode:
 ```css
 [data-ogsc] .darkModeBG { background-color: #1a1a1a; }
 ```
-
-### Testing Dark Mode
-
-- **Apple Mail:** System Preferences → Dark Mode
-- **Outlook:** File → Options → Dark Mode
-- **Gmail:** Settings → Display density → Suggested (includes dark theme)
 
 ---
 
