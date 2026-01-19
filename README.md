@@ -149,6 +149,83 @@ When creating templates, use these variables to inject components:
 
 ---
 
+## 📦 Component Naming & Mapping
+
+### Naming Convention
+
+Component files use **kebab-case with underscores**, but are called in templates as **camelCase variables**:
+
+| Component File | Template Variable |
+|---|---|
+| `hero.html` | `{{ hero }}` |
+| `day_banner.html` | `{{ dayBanner }}` |
+| `tour_banner.html` | `{{ tourBanner }}` |
+| `3_columns.html` | `{{ threeColumns }}` |
+| `styles.css` | `{{ styles }}` |
+
+### How the Mapping Works
+
+The `scripts/build.js` file **automatically discovers** all components in `/components/`:
+
+```javascript
+// Auto-discover components
+const components = discoverComponents();
+
+// Converts filenames to camelCase variables:
+// hero.html           → {{ hero }}
+// day_banner.html     → {{ dayBanner }}
+// tour_banner.html    → {{ tourBanner }}
+// 3_columns.html      → {{ threeColumns }}
+// styles.css          → {{ styles }}
+```
+
+**Important:** The build script automatically converts kebab-case filenames (`day_banner.html`) to camelCase variables (`{{ dayBanner }}`). No manual mapping needed.
+
+### Adding a New Component
+
+**That's it! Just create the file.** The build script auto-discovers components automatically.
+
+**Step 1: Create the component file**
+
+Create a new HTML file in `components/` with kebab-case naming:
+
+```bash
+# Example: Create a testimonials component
+components/testimonials.html
+```
+
+**Step 2: Use in templates**
+
+Use the auto-generated camelCase variable in any template:
+
+```html
+{{ hero }}
+{{ threeColumns }}
+{{ testimonials }}  <!-- Your new component - auto-discovered! -->
+```
+
+**Step 3: Build and test**
+
+```bash
+npm run build
+```
+
+The output will show:
+```
+🔍 Auto-discovering components...
+
+  ✓ Loaded: hero.html → {{ hero }}
+  ✓ Loaded: day_banner.html → {{ dayBanner }}
+  ✓ Loaded: tour_banner.html → {{ tourBanner }}
+  ✓ Loaded: 3_columns.html → {{ threeColumns }}
+  ✓ Loaded: styles.css → {{ styles }}
+  ✓ Loaded: testimonials.html → {{ testimonials }}  ← Your new component!
+```
+
+That's it! No manual build.js edits needed.
+
+---
+
 ## 📝 Creating Templates
 
 ### Step 1: Create Template Source
@@ -432,73 +509,39 @@ Gmail uses `[data-ogsc]` selector for dark mode:
 
 ---
 
-## 📚 Workflow Examples
+## 📚 Common Workflows
 
-### Example 1: Update Button Color Across All Emails
+### Update a Component (Changes All Templates)
 
-**Goal:** Change primary button color from orange (#E87434) to gold (#FFB81C)
-
-**Steps:**
-1. Open `components/styles.css`
-2. Find `.buttonstyles` class
-3. Change `background-color: #E87434` to `background-color: #FFB81C`
-4. Save the file
-5. Run `npm run build`
-6. All templates in `/Test/` automatically regenerate with new color
-
-**Result:** One edit, all templates updated ✅
-
-### Example 2: Create a Hero-Only Template
-
-**Goal:** Create a simple email with just a hero image and button
+**Goal:** Update 3-column layout, have changes appear in all templates
 
 **Steps:**
-1. Create `src/templates/hero_only.njk` with:
-   ```html
-   <!DOCTYPE HTML...>
-   <!-- Meta tags, styles, etc. -->
-   <style type="text/css">
-     {{ styles }}
-   </style>
-   <!-- Body -->
-   <table class="container">
-     <tr><td>
-       {{ hero }}
-       <!-- Add button manually or use component -->
-     </td></tr>
-   </table>
-   ```
-2. Run `npm run build`
-3. View generated `Test/hero_only.html`
+1. Edit `components/3_columns.html`
+2. Run `npm run build` (or save if `npm run watch` is running)
+3. All templates that use `{{ threeColumns }}` regenerate automatically
 
-**Result:** New template without duplicating any HTML ✅
+**Result:** Single component edit, all templates update instantly ✅
 
-### Example 3: Add New Component
+### Create a New Template
 
-**Goal:** Create a "testimonials" component and add to all templates
+**Goal:** Assemble existing components into a new template
 
 **Steps:**
-1. Create `components/testimonials.html` with testimonial HTML
-2. Update `scripts/build.js` to add `testimonials: readComponent('testimonials.html')`
-3. Update `.njk` templates to include `{{ testimonials }}` in desired location
+1. Create `src/templates/my_template.njk` (copy structure from existing templates)
+2. Include `{{ styles }}` in `<style>` tag
+3. Add components in desired order: `{{ hero }}`, `{{ tourBanner }}`, etc.
 4. Run `npm run build`
-5. All templates regenerate with testimonials
+5. View generated `Test/my_template.html`
 
-**Result:** Scalable component system ✅
+**Result:** New template without duplicating HTML ✅
 
-### Example 4: Active Development with Watch Mode
+### Active Development Mode
 
-**Goal:** Develop a new template and see live updates
+```bash
+npm run watch
+```
 
-**Steps:**
-1. Create new `.njk` template in `src/templates/`
-2. In terminal, run `npm run watch`
-3. Edit template, save → automatically rebuilds
-4. Edit component, save → automatically rebuilds
-5. View changes in browser (refresh page)
-6. Press Ctrl+C to stop watch mode
-
-**Result:** Instant feedback during development ✅
+Automatically rebuilds when you save changes to components or templates. Press Ctrl+C to stop.
 
 ---
 
