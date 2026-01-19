@@ -5,6 +5,8 @@
   "main": "scripts/build.js",
   "scripts": {
     "build": "node scripts/build.js",
+    "test": "node scripts/test.js",
+    "build:test": "npm run build && npm run test",
     "watch": "nodemon scripts/build.js",
     "clean": "rm -rf Test"
   },
@@ -15,7 +17,7 @@
     "nunjucks",
     "responsive"
   ],
-  "author": "Celebrity Cruises",
+  "author": "Jorge Acuna",
   "license": "PROPRIETARY",
   "devDependencies": {
     "nunjucks": "^3.2.3",
