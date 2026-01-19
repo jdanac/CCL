@@ -36,9 +36,7 @@ CCL/
 │
 ├── src/
 │   └── templates/             # Nunjucks template sources (git ignored)
-│       ├── component_showcase.njk  # Full component showcase
 │       ├── agent_test.njk          # Test template with all components
-│       ├── showcase.njk             # Alternative layout
 │       └── _boilerplate.njk        # Starter template (not built)
 │
 ├── Test/                       # Auto-generated HTML output (git ignored)
@@ -146,7 +144,7 @@ When creating templates, use these variables to inject components:
 
 ### Naming Convention
 
-Component files use **kebab-case with underscores**, but are called in templates as **camelCase variables**:
+Component files use **underscores**, but are called in templates as **camelCase variables**:
 
 | Component File | Template Variable |
 |---|---|
@@ -180,11 +178,11 @@ const components = discoverComponents();
 
 **Step 1: Create the component file**
 
-Create a new HTML file in `components/` with kebab-case naming:
+Create a new HTML file in `components/` with underscores naming:
 
 ```bash
-# Example: Create a testimonials component
-components/testimonials.html
+# Example: Create double banner component
+components/double_banner.html
 ```
 
 **Step 2: Use in templates**
@@ -194,7 +192,7 @@ Use the auto-generated camelCase variable in any template:
 ```html
 {{ hero }}
 {{ threeColumns }}
-{{ testimonials }}  <!-- Your new component - auto-discovered! -->
+{{ doubleBanner }}  <!-- Your new component - auto-discovered! -->
 ```
 
 **Step 3: Build and test**
@@ -212,7 +210,7 @@ The output will show:
   ✓ Loaded: tour_banner.html → {{ tourBanner }}
   ✓ Loaded: three_columns.html → {{ threeColumns }}
   ✓ Loaded: styles.css → {{ styles }}
-  ✓ Loaded: testimonials.html → {{ testimonials }}  ← Your new component!
+  ✓ Loaded: double_banner.html → {{ doubleBanner }}  ← Your new component!
 ```
 
 That's it! No manual build.js edits needed.
@@ -354,7 +352,7 @@ Gmail uses `[data-ogsc]` selector for dark mode:
 1. **Components stay in `components/`** - Never move them
 2. **Templates stay in `src/templates/`** - Sources only, no generated files here
 3. **Don't edit `/Test/` folder** - It's auto-generated, changes will be lost
-4. **Ignore `/Template/` folder** - Legacy templates, being deprecated
+4. **Ignore `/Template/` folder** - Legacy templates, deprecated
 
 ---
 
@@ -467,32 +465,5 @@ Automatically rebuilds when you save changes to components or templates. Press C
 
 ---
 
-## 📞 Support & Questions
-
-For questions about:
-- **Component structure:** Review [Component Reference](#component-reference)
-- **Build system:** Check [Build System](#build-system) section
-- **Responsive design:** See [Responsive Design](#responsive-design) section
-- **Specific issues:** See [Troubleshooting](#troubleshooting)
-
----
-
-## 📄 File Change History
-
-| File | Purpose | Status |
-|------|---------|--------|
-| `components/styles.css` | Master stylesheet | Active |
-| `components/hero.html` | Hero banner | Active |
-| `components/day_banner.html` | Day info banner | Active |
-| `components/tour_banner.html` | 2-column layout | Active |
-| `components/three_columns.html` | 3-column cards | Active |
-| `scripts/build.js` | Build automation | Active |
-| `src/templates/*.njk` | Template sources | Active |
-| `Test/` | Generated output | Auto-generated |
-| `Template/` | Legacy templates | Deprecated |
-
----
-
 **Last Updated:** January 19, 2026  
-**Build System Version:** 1.0.0  
 **Compatibility:** SFMC, Gmail, Outlook, Apple Mail
