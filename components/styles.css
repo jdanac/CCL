@@ -81,6 +81,13 @@ a { color: #299BE1; }
   border-radius: 8px;
 }
 
+/* Container cell for inline buttons (ensures button stays centered, not full-width on mobile) */
+    .button-cell {
+      text-align: center;
+      width: auto;
+      display: inline-block;
+}
+
 /* small helpers for hiding/showing (used in some templates) */
 .hide { display: none !important; }
 .show { display: block !important; max-height: none !important; overflow: visible !important; line-height: normal !important; }
@@ -102,7 +109,8 @@ a { color: #299BE1; }
   .textC { text-align: center !important; }
   .mobile-padding-0-20 { padding-left: 20px !important; padding-right: 20px !important; }
   img { max-width: 100% !important; height: auto !important; }
-  .buttonstyles { display: block !important; margin: 0 auto !important; }
+  .buttonstyles { display: inline-block !important; margin: 0 auto !important; }
+  .button-cell { display: inline-block !important; width: auto !important; }
 }
 
 
