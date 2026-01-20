@@ -1,6 +1,7 @@
 // State
 let availableComponents = [];
 let selectedComponents = [];
+let currentViewport = 'mobile'; // Default viewport
 
 // DOM Elements
 const componentsList = document.getElementById('componentsList');
@@ -15,11 +16,16 @@ const exportFilename = document.getElementById('exportFilename');
 const cancelExportBtn = document.getElementById('cancelExportBtn');
 const confirmExportBtn = document.getElementById('confirmExportBtn');
 
+// Viewport buttons
+const mobileBtn = document.querySelector('.mobile-btn');
+const desktopBtn = document.querySelector('.desktop-btn');
+
 // Initialize
 async function init() {
   await loadComponents();
   setupEventListeners();
   setupSortable();
+  setViewport('mobile'); // Set default viewport
 }
 
 // Load available components from server
@@ -229,13 +235,37 @@ function setupEventListeners() {
   confirmExportBtn.addEventListener('click', () => {
     exportTemplate();
   });
-
   // Close modal on outside click
   exportModal.addEventListener('click', (e) => {
     if (e.target === exportModal) {
       exportModal.classList.remove('active');
     }
   });
+
+  // Viewport toggle buttons
+  mobileBtn.addEventListener('click', () => setViewport('mobile'));
+  desktopBtn.addEventListener('click', () => setViewport('desktop'));
+}
+
+// Set viewport size
+function setViewport(viewport) {
+  currentViewport = viewport;
+  
+  // Update button states
+  mobileBtn.classList.remove('active');
+  desktopBtn.classList.remove('active');
+  
+  // Remove all viewport classes from iframe
+  previewFrame.classList.remove('mobile-view', 'desktop-view');
+  
+  // Add active state and viewport class
+  if (viewport === 'mobile') {
+    mobileBtn.classList.add('active');
+    previewFrame.classList.add('mobile-view');
+  } else if (viewport === 'desktop') {
+    desktopBtn.classList.add('active');
+    previewFrame.classList.add('desktop-view');
+  }
 }
 
 // Initialize app

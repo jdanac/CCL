@@ -42,10 +42,23 @@ body {
 /* Main Content */
 .main-content {
   display: grid;
-  grid-template-columns: 250px 1fr 400px;
+  grid-template-columns: 250px 1fr minmax(500px, 45%);
   gap: 0;
   height: calc(100vh - 70px);
   overflow: hidden;
+}
+
+/* Responsive grid for smaller screens */
+@media (max-width: 1400px) {
+  .main-content {
+    grid-template-columns: 220px 1fr minmax(450px, 40%);
+  }
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    grid-template-columns: 200px 1fr minmax(400px, 35%);
+  }
 }
 
 /* Component Library */
@@ -211,6 +224,7 @@ body {
   border-left: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
+  min-width: 400px;
 }
 
 .preview-header {
@@ -219,6 +233,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
 .preview-header h2 {
@@ -226,10 +241,42 @@ body {
   color: #2d3748;
 }
 
+.preview-viewport-controls {
+  display: flex;
+  gap: 0.25rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.viewport-btn {
+  padding: 0.4rem 0.7rem;
+  border: none;
+  background: white;
+  color: #718096;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.viewport-btn:hover {
+  background: #f7fafc;
+}
+
+.viewport-btn.active {
+  background: #667eea;
+  color: white;
+}
+
 .preview-container {
   flex: 1;
   padding: 1rem;
-  overflow: hidden;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: #fafbfc;
 }
 
 #previewFrame {
@@ -238,6 +285,15 @@ body {
   border: 1px solid #e2e8f0;
   border-radius: 4px;
   background: white;
+}
+
+#previewFrame.mobile-view {
+  max-width: 414px;
+}
+
+
+#previewFrame.desktop-view {
+  max-width: 100%;
 }
 
 /* Buttons */
