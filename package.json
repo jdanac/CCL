@@ -8,7 +8,9 @@
     "test": "node scripts/test.js",
     "build:test": "npm run build && npm run test",
     "watch": "nodemon scripts/build.js",
-    "clean": "rm -rf Test"
+    "clean": "rm -rf Test GUI_Output",
+    "gui": "node server/server.js",
+    "gui:dev": "nodemon server/server.js"
   },
   "keywords": [
     "email",
@@ -20,6 +22,7 @@
   "author": "Jorge Acuna",
   "license": "PROPRIETARY",
   "devDependencies": {
+    "express": "^4.18.2",
     "nunjucks": "^3.2.3",
     "nodemon": "^3.0.1"
   },
