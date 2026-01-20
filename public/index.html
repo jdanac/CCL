@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCL Template Builder</title>
+  <link rel="stylesheet" href="gui-styles.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Header -->
+    <header class="app-header">
+      <h1>🎨 CCL Email Template Builder</h1>
+      <div class="header-actions">
+        <button id="clearBtn" class="btn btn-secondary">Clear All</button>
+        <button id="previewBtn" class="btn btn-primary">Preview</button>
+        <button id="exportBtn" class="btn btn-success">Export HTML</button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      
+      <!-- Left Panel - Component Library -->
+      <aside class="component-library">
+        <h2>Components</h2>
+        <p class="library-hint">Drag components to the canvas →</p>
+        <div id="componentsList" class="components-list">
+          <div class="loading">Loading components...</div>
+        </div>
+      </aside>
+
+      <!-- Center Panel - Canvas -->
+      <main class="canvas-area">
+        <div class="canvas-header">
+          <h2>Canvas</h2>
+          <span class="canvas-hint">Drag components here to build your template</span>
+        </div>
+        <div id="canvas" class="canvas">
+          <div class="empty-state">
+            <div class="empty-icon">📧</div>
+            <p>Drag components from the left to start building</p>
+          </div>
+        </div>
+      </main>
+
+      <!-- Right Panel - Preview -->
+      <aside class="preview-panel">
+        <div class="preview-header">
+          <h2>Preview</h2>
+          <div class="preview-viewport-controls">
+            <button class="viewport-btn mobile-btn active" title="Mobile View (375px)">📱 Mobile</button>
+            <button class="viewport-btn desktop-btn" title="Desktop View (Full)">🖥️ Desktop</button>
+          </div>
+          <button id="refreshPreviewBtn" class="btn-icon" title="Refresh Preview">🔄</button>
+        </div>
+        <div class="preview-container">
+          <iframe id="previewFrame" title="Template Preview"></iframe>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Export Modal -->
+  <div id="exportModal" class="modal">
+    <div class="modal-content">
+      <h2>Export Template</h2>
+      <label for="exportFilename">Filename:</label>
+      <input type="text" id="exportFilename" value="exported_template.html" />
+      <div class="modal-actions">
+        <button id="cancelExportBtn" class="btn btn-secondary">Cancel</button>
+        <button id="confirmExportBtn" class="btn btn-success">Export</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sortable.js for Drag & Drop -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
