@@ -105,6 +105,86 @@ CCL/
 
 ---
 
+## 🎨 Two Workflows: CLI vs GUI
+
+This project supports two different workflows for creating templates. Choose based on your needs:
+
+### **Workflow 1: CLI Build System (Production)**
+
+Best for: Batch processing, CI/CD pipelines, final exports, automated builds
+
+**Commands:**
+```bash
+npm run build      # Build all templates once
+npm run watch      # Auto-rebuild on file changes (development)
+npm run clean      # Delete Test/ folder
+```
+
+**Process:**
+1. Create `.njk` files in `src/templates/`
+2. Reference components using Nunjucks variables
+3. Run `npm run build`
+4. Output appears in `Test/` folder
+5. Deploy generated HTML files
+
+**Example:**
+```bash
+# Development: Watch for changes
+npm run watch
+
+# Production: Single build
+npm run build
+```
+
+---
+
+### **Workflow 2: Interactive GUI (Content Creation)**
+
+Best for: Quick prototyping, visual layout testing, drag-and-drop composition, learning
+
+**Commands:**
+```bash
+npm run gui        # Start web interface on http://localhost:3000
+npm run gui:dev    # Start with auto-reload (development)
+```
+
+**Features:**
+- 🎯 **Component Library** - Visual list of all available components
+- 🖱️ **Drag & Drop Canvas** - Arrange components by dragging
+- 👁️ **Live Preview** - Real-time preview of your email layout
+- 💾 **Export** - Download final HTML to `GUI_Output/` folder
+
+**Process:**
+1. Run `npm run gui`
+2. Open browser to `http://localhost:3000`
+3. Drag components from left panel to center canvas
+4. Reorder by dragging within canvas
+5. Click "Preview" to see rendered email
+6. Click "Export HTML" to save final file
+
+**Output Location:** `GUI_Output/` folder
+
+---
+
+### **Choosing Your Workflow**
+
+| Aspect | CLI | GUI |
+|--------|-----|-----|
+| **Input** | `.njk` template files | Web interface |
+| **Output** | `Test/` folder | `GUI_Output/` folder |
+| **Best For** | Automation, production | Prototyping, testing |
+| **Learning Curve** | Medium | Easy |
+| **Speed** | Fast (CLI) | Instant preview |
+| **Collaboration** | Git version control | Browser-based |
+
+**Can they coexist?** Yes! Both workflows are completely independent:
+- Run CLI build in one terminal
+- Run GUI in another terminal
+- No conflicts or interference
+- Use both for different purposes
+
+---
+
 ## 🔨 Build System
 
 ### npm Scripts
@@ -113,7 +193,9 @@ CCL/
 |---------|---------|
 | `npm run build` | Build all templates once |
 | `npm run watch` | Auto-rebuild when files change (development mode) |
-| `npm run clean` | Delete `/Test/` folder (auto-regenerated on next build) |
+| `npm run gui` | Start interactive GUI server on http://localhost:3000 |
+| `npm run gui:dev` | Start GUI with auto-reload for development |
+| `npm run clean` | Delete `/Test/` and `/GUI_Output/` folders |
 
 ### How the Build Script Works
 
