@@ -32,22 +32,34 @@ CCL/
 │   ├── hero.html              # Full-width hero banner
 │   ├── day_banner.html        # Location/day info with activities
 │   ├── tour_banner.html       # 2-column image + content layout
-│   └── three_columns.html         # 3-column card layout
+│   ├── three_columns.html     # 3-column card layout
+│   └── ...                    # Other components
 │
 ├── src/
 │   └── templates/             # Nunjucks template sources (git ignored)
-│       ├── agent_test.njk          # Test template with all components
-│       └── _boilerplate.njk        # Starter template (not built)
+│       ├── agent_test.njk     # Test template with all components
+│       ├── _boilerplate.njk   # Starter template (not built)
+│       └── ...                # Other templates
+│
+├── public/                     # GUI web app (static assets)
+│   ├── index.html             # GUI interface
+│   ├── app.js                 # GUI application logic
+│   └── gui-styles.css         # GUI styling
+│
+├── server/
+│   └── server.js              # Express server for GUI app
 │
 ├── Test/                       # Auto-generated HTML output (git ignored)
 │   ├── component_showcase.html
 │   ├── agent_test.html
-│   └── showcase.html
+│   └── ...                    # Other generated templates
 │
-├── Template_deprecated/        # DEPRECATED - old manual templates (git ignored)
+├── GUI_Output/                 # GUI-generated HTML exports (git ignored)
+│
+├── Template_DEPRECATED/        # DEPRECATED - old manual templates (git ignored)
 │
 ├── scripts/
-│   └── build.js               # Build script - assembles templates
+│   ├── build.js               # Build script - assembles templates
 │   └── test.js                # Test script
 │
 ├── package.json               # npm configuration
@@ -57,11 +69,12 @@ CCL/
 
 **Git Ignored Folders:**
 - `/src/templates/` - Template sources (not tracked in git)
-- `/Test/` - Auto-generated build output (not tracked in git)
-- `/Template_deprecated/` - Legacy templates folder (not tracked in git)
+- `/Test/` - Auto-generated CLI build output (not tracked in git)
+- `/GUI_Output/` - GUI-generated HTML exports (not tracked in git)
+- `/Template_DEPRECATED/` - Legacy templates folder (not tracked in git)
 - `/node_modules/` - Dependencies (not tracked in git)
 
-**Note:** Only `/components/` folder and configuration files are tracked in git.
+**Note:** The `/components/`, `/public/`, `/server/`, and `/scripts/` folders are tracked in git. Configuration files like `package.json` and `.gitignore` are also tracked.
 
 ---
 
