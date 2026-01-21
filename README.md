@@ -1,6 +1,6 @@
 # CCL Email Template System
 
-A modular, component-based email template system for Celebrity emails. Built with Nunjucks templating engine for automated component assembly and easy maintenance.
+A modular, component-based email template system. Built with Nunjucks templating engine for automated component assembly and easy maintenance.
 
 ---
 
