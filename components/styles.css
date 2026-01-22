@@ -88,9 +88,6 @@ a { color: #299BE1; }
   display: inline-block;
 }
 
-/* small helpers for hiding/showing (used in some templates) */
-.hide { display: none !important; }
-.show { display: block !important; max-height: none !important; overflow: visible !important; line-height: normal !important; }
 
 /* ---------- DARK MODE ---------- */
 :root { color-scheme: light dark; supported-color-schemes: light dark; }
@@ -112,7 +109,16 @@ a { color: #299BE1; }
   .mobile-padding-0-40 { padding-left: 40px !important; padding-right: 40px !important; }
   img { max-width: 100% !important; height: auto !important; }
   .buttonstyles { display: inline-block !important; margin: 0 auto !important; }
+  .mobile-display-inline-block { display: inline-block !important; }
   .button-cell { display: inline-block !important; width: auto !important; margin: 0 auto !important; }
+  .hide {display: none !important;}
+  .show {display: block !important; max-height: none !important; overflow:visible !important; line-height:normal !important;}
+     .mobile-border{
+          border: none !important;     
+        }
+  .mobile-border-bottom {
+            border-bottom: none !important;
+        }
 }
 
 
