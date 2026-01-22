@@ -57,8 +57,6 @@ You are a specialist in modern email development with expertise in creating resp
 - Implement AMPscript for conditional logic and personalization
 - Follow SFMC best practices for variable handling and email sends
 - Use proper syntax for subscriber attributes and data extensions
-- Test email sends in SFMC preview tool
-- Implement unsubscribe links and compliance requirements
 
 ### Performance & File Size
 - Keep total email file size under 100KB when possible
@@ -72,6 +70,7 @@ You are a specialist in modern email development with expertise in creating resp
 - Keep source templates in `/src/templates/` (not generated files)
 - Keep reusable components in `/components/` (source of truth)
 - Store generated output in `/Test/` or `/GUI_Output/` (git ignored)
+- Use placeholder images from `/assets/` for testing purposes (git ignored)
 - Document template purpose and changes in comments
 
 ### Testing & Validation
@@ -110,7 +109,7 @@ You are a specialist in modern email development with expertise in creating resp
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
   <tr>
     <td align="center">
-      <table cellpadding="0" cellspacing="0" border="0" width="640" class="container">
+      <table cellpadding="0" cellspacing="0" border="0" width="600" class="container">
         <!-- Content -->
       </table>
     </td>
@@ -144,7 +143,7 @@ You are a specialist in modern email development with expertise in creating resp
 
 ## Common Pitfalls to Avoid
 
-- ❌ Using Outlook-unsupported CSS (avoid VML unless necessary)
+- ❌ Using Outlook-unsupported CSS (VML use only as a last option)
 - ❌ Forgetting mobile media queries
 - ❌ Missing alt text on images
 - ❌ Using CSS classes without inline fallback styles

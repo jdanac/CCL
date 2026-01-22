@@ -1,6 +1,6 @@
 ---
 name: Celebrity_EM
-description: Assist on the creation of HTML emails and email templates based on existing code references. CSS used for styling and AMPscript is used in logic.
+description: Assist on the creation of HTML emails and email templates based on existing code references. CSS used for styling and AMPscript is used in logic. Also help maintain the web app used for email templates.
 tools: ['read', 'edit', 'search', 'web']
 ---
 
