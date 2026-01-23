@@ -20,6 +20,13 @@ This system solves the manual template maintenance problem by:
 - **CSS**: Responsive design with mobile breakpoint at 600px
 - **Templating**: Nunjucks (`.njk` files)
 - **Build Tool**: Node.js + npm scripts
+- **GUI Server**: Express.js (web interface)
+
+### Dependencies
+
+- **nunjucks** `^3.2.3` - Templating engine for component assembly
+- **express** `^4.18.2` - Web server for GUI interface
+- **nodemon** `^3.0.1` - File watcher for development mode
 
 ---
 
@@ -91,7 +98,10 @@ CCL/
    ```bash
    npm install
    ```
-   This installs `nunjucks` (templating engine) and `nodemon` (file watcher).
+   This installs:
+   - `nunjucks` ^3.2.3 - Templating engine
+   - `express` ^4.18.2 - GUI web server
+   - `nodemon` ^3.0.1 - File watcher for development
 
 2. **Verify setup by running a build:**
    ```bash
