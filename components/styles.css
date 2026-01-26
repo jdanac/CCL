@@ -100,7 +100,6 @@ a {
 
 /* Two-column helper that stacks on mobile */
 .responsive-td {
-  display: table-cell;
   vertical-align: top;
 }
 
@@ -110,9 +109,6 @@ a {
 }
 
 /* utility spacing used in templates */
-.mobile-padding-0-20 {
-  /* neutral by default; applied via media query */
-}
 
 /* ---------- BUTTONS ---------- */
 .buttonstyles {
@@ -120,7 +116,7 @@ a {
   background: #e87434;
   border: 1px solid #e87434;
   color: #ffffff;
-  padding: 10px 30px;
+
   font-family: "Poppins", Arial, sans-serif;
   font-size: 14px;
   line-height: 1.1;
