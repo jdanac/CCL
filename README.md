@@ -63,8 +63,6 @@ CCL/
 │
 ├── GUI_Output/                 # GUI-generated HTML exports (git ignored)
 │
-├── Template_DEPRECATED/        # DEPRECATED - old manual templates (git ignored)
-│
 ├── scripts/
 │   ├── build.js               # Build script - assembles templates
 │   └── test.js                # Test script
@@ -78,7 +76,6 @@ CCL/
 - `/src/templates/` - Template sources (not tracked in git)
 - `/Test/` - Auto-generated CLI build output (not tracked in git)
 - `/GUI_Output/` - GUI-generated HTML exports (not tracked in git)
-- `/Template_DEPRECATED/` - Legacy templates folder (not tracked in git)
 - `/node_modules/` - Dependencies (not tracked in git)
 
 **Note:** The `/components/`, `/public/`, `/server/`, and `/scripts/` folders are tracked in git. Configuration files like `package.json` and `.gitignore` are also tracked.
@@ -103,65 +100,13 @@ CCL/
    - `express` ^4.18.2 - GUI web server
    - `nodemon` ^3.0.1 - File watcher for development
 
-2. **Verify setup by running a build:**
-   ```bash
-   npm run build
-   ```
-   You should see output like:
-   ```
-   🔨 Starting build process...
-   
-   📋 Found 3 template(s):
-   
-     ⚙️  Building: component_showcase.njk
-     ✅ Output: component_showcase.html (4.82 KB)
-   
-     ⚙️  Building: agent_test.njk
-     ✅ Output: agent_test.html (4.82 KB)
-   
-     ⚙️  Building: showcase.njk
-     ✅ Output: showcase.html (4.65 KB)
-   
-   ✨ Build complete!
-   
-   ```
-
 ---
 
-## 🎨 Two Workflows: CLI vs GUI
+## 🎨 Primary Workflow: GUI
 
-This project supports two different workflows for creating templates. Choose based on your needs:
+This project is designed for content creation via the interactive GUI.
 
-### **Workflow 1: CLI Build System (Production)**
-
-Best for: Batch processing, CI/CD pipelines, final exports, automated builds
-
-**Commands:**
-```bash
-npm run build      # Build all templates once
-npm run watch      # Auto-rebuild on file changes (development)
-npm run clean      # Delete Test/ folder
-```
-
-**Process:**
-1. Create `.njk` files in `src/templates/`
-2. Reference components using Nunjucks variables
-3. Run `npm run build`
-4. Output appears in `Test/` folder
-5. Deploy generated HTML files
-
-**Example:**
-```bash
-# Development: Watch for changes
-npm run watch
-
-# Production: Single build
-npm run build
-```
-
----
-
-### **Workflow 2: Interactive GUI (Content Creation)**
+### **Interactive GUI (Recommended)**
 
 Best for: Quick prototyping, visual layout testing, drag-and-drop composition, learning
 
@@ -189,22 +134,18 @@ npm run gui:dev    # Start with auto-reload (development)
 
 ---
 
-### **Choosing Your Workflow**
+### Developer CLI (for app dev/testing only)
 
-| Aspect | CLI | GUI |
-|--------|-----|-----|
-| **Input** | `.njk` template files | Web interface |
-| **Output** | `Test/` folder | `GUI_Output/` folder |
-| **Best For** | Automation, production | Prototyping, testing |
-| **Learning Curve** | Medium | Easy |
-| **Speed** | Fast (CLI) | Instant preview |
-| **Collaboration** | Git version control | Browser-based |
+Use the CLI only when developing or testing the app internals (templates/build script). It’s not intended for everyday content authoring.
 
-**Can they coexist?** Yes! Both workflows are completely independent:
-- Run CLI build in one terminal
-- Run GUI in another terminal
-- No conflicts or interference
-- Use both for different purposes
+**Commands:**
+```bash
+npm run build      # Build all templates once (dev/testing)
+npm run watch      # Auto-rebuild on file changes (dev)
+npm run clean      # Delete Test/ and GUI_Output/ folders
+```
+
+**Output:** `Test/` folder (development build artifacts)
 
 ---
 
@@ -457,7 +398,7 @@ Gmail uses `[data-ogsc]` selector for dark mode:
 1. **Components stay in `components/`** - Never move them
 2. **Templates stay in `src/templates/`** - Sources only, no generated files here
 3. **Don't edit `/Test/` folder** - It's auto-generated, changes will be lost
-4. **Ignore `/Template/` folder** - Legacy templates, deprecated
+4. **Use GUI for content** - Prefer the GUI workflow; CLI is for dev/testing
 
 ---
 
