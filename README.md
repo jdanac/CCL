@@ -91,6 +91,15 @@ CCL/
 - Node.js (v14 or higher)
 - npm (v6 or higher)
 
+### Quick Start (GUI)
+
+```bash
+npm ci              # or npm install
+npm run gui         # starts http://localhost:3000
+```
+
+1) Install deps with the lockfile (deterministic). 2) Visit `http://localhost:3000` and build with the GUI. Tracked placeholder assets in `assets/` power the preview; swap to brand-approved URLs for production.
+
 ### Installation
 
 1. **Install dependencies:**
