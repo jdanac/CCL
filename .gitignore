@@ -4,18 +4,18 @@
 # GUI generated output
 /GUI_Output/
 
-# Testing assets
-/assets/
+# Assets (tracked: placeholder images for GUI)
 
 # src templates
-/src/templates/
+# Ignore user-created templates, but keep GUI boilerplate tracked
+/src/templates/*
+!/src/templates/_gui_boilerplate.njk
 
 # Deprecated folders
 /Template_DEPRECATED/
 
 # Dependencies
 node_modules/
-package-lock.json
 
 # IDE files
 .vscode/
