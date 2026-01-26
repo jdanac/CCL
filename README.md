@@ -42,8 +42,10 @@ CCL/
 │   ├── three_columns.html     # 3-column card layout
 │   └── ...                    # Other components
 │
+├── assets/                     # Placeholder images for GUI previews (tracked)
+│
 ├── src/
-│   └── templates/             # Nunjucks template sources (git ignored)
+│   └── templates/             # Nunjucks template sources (boilerplates tracked; user templates ignored)
 │       ├── agent_test.njk     # Test template with all components
 │       ├── _boilerplate.njk   # Starter template (not built)
 │       └── ...                # Other templates
@@ -73,7 +75,7 @@ CCL/
 ```
 
 **Git Ignored Folders:**
-- `/src/templates/` - Template sources (not tracked in git)
+- `/src/templates/*` (except `_gui_boilerplate.njk`) - User templates are ignored; GUI boilerplate is tracked
 - `/Test/` - Auto-generated CLI build output (not tracked in git)
 - `/GUI_Output/` - GUI-generated HTML exports (not tracked in git)
 - `/node_modules/` - Dependencies (not tracked in git)
@@ -131,6 +133,15 @@ npm run gui:dev    # Start with auto-reload (development)
 6. Click "Export HTML" to save final file
 
 **Output Location:** `GUI_Output/` folder
+
+---
+
+### Assets (Placeholders for GUI)
+
+- The `assets/` folder is tracked and contains placeholder images used by the GUI to preview components.
+- These images are intended for local development and content layout only; replace them with your own brand-approved assets before publishing emails externally.
+- The GUI serves assets from `/assets` via the Express static middleware. For email use, always reference publicly accessible, absolute image URLs.
+- If you keep any brand marks or third-party images, ensure you have permission to include them in a public repository and final email output.
 
 ---
 
