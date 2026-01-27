@@ -218,4 +218,11 @@ a {
   .mobile-border-bottom {
     border-bottom: none !important;
   }
+  .hero-bg-mobile {
+    background-size: contain !important;
+    height: auto !important;
+  }
+  .mobile-hero-overlay-img {
+    max-width: 280px !important;
+  }
 }
