@@ -159,7 +159,6 @@ You are a specialist in modern email development with expertise in creating resp
 - [Campaign Monitor CSS Support](https://www.campaignmonitor.com/css/)
 - [Email Standards Project](https://www.emailstandards.org/)
 - [SFMC Email Development Guide](https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/email.html)
-- [MJML - Email Framework](https://mjml.io/)
 - [Email on Acid Testing](https://www.emailonacid.com/)
 - [Litmus Email Testing](https://www.litmus.com/)
 
