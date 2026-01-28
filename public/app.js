@@ -176,13 +176,15 @@ async function renderPreview() {
 function displayCodeView() {
   if (!currentRenderedHtml) {
     codeContent.textContent = '<!-- Render preview first to see the code! -->';
-    if (typeof Prism !== 'undefined') {
-      Prism.highlightElement(codeDisplay);
-    }
+    codeDisplay.innerHTML = '<code class="language-markup"><!-- Render preview first to see the code! --></code>';
     return;
   }
   
+  console.log('Code length:', currentRenderedHtml.length);
   codeContent.textContent = currentRenderedHtml;
+  codeDisplay.innerHTML = '';
+  codeDisplay.appendChild(codeContent);
+  
   // Force Prism to re-highlight the pre element
   if (typeof Prism !== 'undefined') {
     Prism.highlightElement(codeDisplay);
