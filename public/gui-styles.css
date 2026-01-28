@@ -350,7 +350,7 @@ body {
 }
 
 .btn-icon:hover {
-  transform: rotate(90deg);
+  opacity: 0.8;
 }
 
 /* Modal */
