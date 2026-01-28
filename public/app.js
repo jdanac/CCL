@@ -252,6 +252,7 @@ function setupEventListeners() {
       currentRenderedHtml = '';
       codeContent.textContent = '';
       codeDisplay.textContent = '';
+      copyCodeBtn.textContent = '📋 Copy Code'; // Reset copy button state
       setViewport('mobile'); // Reset to mobile view
     }
   });
