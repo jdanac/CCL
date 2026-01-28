@@ -2,6 +2,7 @@
 let availableComponents = [];
 let selectedComponents = [];
 let currentViewport = 'mobile'; // Default viewport
+let currentRenderedHtml = ''; // Store rendered HTML for code view
 
 // DOM Elements
 const componentsList = document.getElementById('componentsList');
@@ -15,10 +16,15 @@ const exportModal = document.getElementById('exportModal');
 const exportFilename = document.getElementById('exportFilename');
 const cancelExportBtn = document.getElementById('cancelExportBtn');
 const confirmExportBtn = document.getElementById('confirmExportBtn');
+const codePanel = document.getElementById('codePanel');
+const codeDisplay = document.getElementById('codeDisplay');
+const codeContent = document.getElementById('codeContent');
+const copyCodeBtn = document.getElementById('copyCodeBtn');
 
 // Viewport buttons
 const mobileBtn = document.querySelector('.mobile-btn');
 const desktopBtn = document.querySelector('.desktop-btn');
+const codeBtn = document.querySelector('.code-btn');
 
 // Initialize
 async function init() {
@@ -155,6 +161,7 @@ async function renderPreview() {
     const data = await response.json();
     
     if (data.html) {
+      currentRenderedHtml = data.html; // Store for code view
       const blob = new Blob([data.html], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       previewFrame.src = url;
@@ -162,6 +169,43 @@ async function renderPreview() {
   } catch (error) {
     console.error('Error rendering preview:', error);
     alert('Error rendering preview. Check console for details.');
+  }
+}
+
+// Display code view
+function displayCodeView() {
+  if (!currentRenderedHtml) {
+    codeContent.textContent = '<!-- Render preview first to see the code! -->';
+    if (typeof Prism !== 'undefined') {
+      Prism.highlightElement(codeDisplay);
+    }
+    return;
+  }
+  
+  codeContent.textContent = currentRenderedHtml;
+  // Force Prism to re-highlight the pre element
+  if (typeof Prism !== 'undefined') {
+    Prism.highlightElement(codeDisplay);
+  }
+}
+
+// Copy code to clipboard
+async function copyCodeToClipboard() {
+  if (!currentRenderedHtml) {
+    alert('No code to copy!');
+    return;
+  }
+  
+  try {
+    await navigator.clipboard.writeText(currentRenderedHtml);
+    const originalText = copyCodeBtn.textContent;
+    copyCodeBtn.textContent = '✅ Copied!';
+    setTimeout(() => {
+      copyCodeBtn.textContent = originalText;
+    }, 2000);
+  } catch (error) {
+    console.error('Error copying to clipboard:', error);
+    alert('Failed to copy code');
   }
 }
 
@@ -203,6 +247,10 @@ function setupEventListeners() {
       selectedComponents = [];
       updateCanvasState();
       previewFrame.src = '';
+      currentRenderedHtml = '';
+      codeContent.textContent = '';
+      codeDisplay.textContent = '';
+      setViewport('mobile'); // Reset to mobile view
     }
   });
 
@@ -245,6 +293,10 @@ function setupEventListeners() {
   // Viewport toggle buttons
   mobileBtn.addEventListener('click', () => setViewport('mobile'));
   desktopBtn.addEventListener('click', () => setViewport('desktop'));
+  codeBtn.addEventListener('click', () => setViewport('code'));
+  
+  // Code view copy button
+  copyCodeBtn.addEventListener('click', copyCodeToClipboard);
 }
 
 // Set viewport size
@@ -254,17 +306,28 @@ function setViewport(viewport) {
   // Update button states
   mobileBtn.classList.remove('active');
   desktopBtn.classList.remove('active');
+  codeBtn.classList.remove('active');
   
-  // Remove all viewport classes from iframe
-  previewFrame.classList.remove('mobile-view', 'desktop-view');
+  // Hide/show panels
+  const previewContainer = document.querySelector('.preview-container');
   
-  // Add active state and viewport class
   if (viewport === 'mobile') {
     mobileBtn.classList.add('active');
+    previewContainer.classList.remove('hidden');
+    codePanel.classList.add('hidden');
+    previewFrame.classList.remove('mobile-view', 'desktop-view');
     previewFrame.classList.add('mobile-view');
   } else if (viewport === 'desktop') {
     desktopBtn.classList.add('active');
+    previewContainer.classList.remove('hidden');
+    codePanel.classList.add('hidden');
+    previewFrame.classList.remove('mobile-view', 'desktop-view');
     previewFrame.classList.add('desktop-view');
+  } else if (viewport === 'code') {
+    codeBtn.classList.add('active');
+    previewContainer.classList.add('hidden');
+    codePanel.classList.remove('hidden');
+    displayCodeView();
   }
 }
 

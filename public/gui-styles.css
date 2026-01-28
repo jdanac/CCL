@@ -225,6 +225,8 @@ body {
   display: flex;
   flex-direction: column;
   min-width: 400px;
+  flex: 1;
+  overflow: hidden;
 }
 
 .preview-header {
@@ -277,6 +279,10 @@ body {
   justify-content: center;
   align-items: flex-start;
   background: #fafbfc;
+}
+
+.preview-container.hidden {
+  display: none;
 }
 
 #previewFrame {
@@ -430,4 +436,86 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #a0aec0;
+}
+/* Code View Panel */
+.code-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 0;
+  overflow: hidden;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-family: 'Courier New', monospace;
+}
+
+.code-panel.hidden {
+  display: none;
+}
+
+.code-toolbar {
+  padding: 1rem 1rem 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  background: #1e1e1e;
+  border-bottom: 1px solid #2d2d2d;
+}
+
+.code-toolbar button {
+  padding: 0.5rem 1rem;
+  background: #2d2d2d;
+  color: #d4d4d4;
+  border: 1px solid #404040;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.code-toolbar button:hover {
+  background: #3e3e3e;
+  border-color: #555;
+}
+
+#codeDisplay {
+  flex: 1;
+  background: #1e1e1e;
+  padding: 1rem;
+  border-radius: 0;
+  overflow: auto;
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  min-height: 0;
+}
+
+#codeDisplay code {
+  font-family: 'Courier New', monospace;
+}
+
+/* Prism.js styling override */
+.code-panel .token {
+  color: #d4d4d4;
+}
+
+.code-panel .token.tag {
+  color: #569cd6;
+}
+
+.code-panel .token.attr-name {
+  color: #9cdcfe;
+}
+
+.code-panel .token.attr-value {
+  color: #ce9178;
+}
+
+.code-panel .token.string {
+  color: #ce9178;
+}
+
+.code-panel .token.comment {
+  color: #608b4e;
 }

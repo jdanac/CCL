@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Email Template Builder</title>
   <link rel="stylesheet" href="gui-styles.css">
+  <!-- Prism.js for syntax highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
 </head>
 <body>
   <div class="app-container">
@@ -52,11 +56,18 @@
           <div class="preview-viewport-controls">
             <button class="viewport-btn mobile-btn active" title="Mobile View (375px)">📱 Mobile</button>
             <button class="viewport-btn desktop-btn" title="Desktop View (Full)">🖥️ Desktop</button>
+            <button class="viewport-btn code-btn" title="View HTML Code">📄 Code</button>
           </div>
           <button id="refreshPreviewBtn" class="btn-icon" title="Refresh Preview">🔄</button>
         </div>
         <div class="preview-container">
           <iframe id="previewFrame" title="Template Preview"></iframe>
+        </div>
+        <div id="codePanel" class="code-panel hidden">
+          <div class="code-toolbar">
+            <button id="copyCodeBtn" class="btn-icon" title="Copy to Clipboard">📋 Copy Code</button>
+          </div>
+          <pre id="codeDisplay"><code class="language-markup" id="codeContent"></code></pre>
         </div>
       </aside>
 
