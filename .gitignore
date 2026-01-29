@@ -4,6 +4,9 @@
 # GUI generated output
 /GUI_Output/
 
+# AMPscript integrated versions (local testing only)
+/AMP-Integrated/
+
 # GitHub agent and skill configs (internal use only)
 .github/
 
