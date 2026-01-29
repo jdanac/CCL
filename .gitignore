@@ -8,7 +8,7 @@
 /AMP-Integrated/
 
 # AMPscript reference templates (source files with ampscript)
-/components/amp-references/
+/amp-references/
 
 # GitHub agent and skill configs (internal use only)
 .github/
