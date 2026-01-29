@@ -7,6 +7,9 @@
 # AMPscript integrated versions (local testing only)
 /AMP-Integrated/
 
+# AMPscript reference templates (source files with ampscript)
+/components/amp-references/
+
 # GitHub agent and skill configs (internal use only)
 .github/
 
