@@ -248,4 +248,14 @@ a {
     width: 50% !important;
     margin: 0 auto !important;
   }
+  .hide-booked-image-mobile {
+        display: none !important;
+        height: 0 !important;
+        line-height: 0 !important;
+        font-size: 0 !important;
+    }
+    .hide-booked-image-mobile td {
+        display: none !important;
+        height: 0 !important;
+    }
 }
