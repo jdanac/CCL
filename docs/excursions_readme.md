@@ -35,47 +35,67 @@ These variables **must** be set by `SHOREX_ampscript.html` before this component
 
 ### Loop Logic
 
-#### Two-Column Pairing System
-The component renders shore excursion days in a **2-column layout** by processing data in pairs:
+#### Pending Day Pairing System
+The component renders shore excursion days in a **2-column layout** by processing ALL rows sequentially and tracking a "pending" day:
 
+**Flow:**
 ```
-Iteration 1: Days 1 & 2 (LEFT & RIGHT columns)
-Iteration 2: Days 3 & 4 (LEFT & RIGHT columns)
-Iteration 3: Days 5 & 6 (LEFT & RIGHT columns)
-...
+Loop row 1: Port day → Save as PENDING LEFT
+Loop row 2: AT SEA → Skip (filter)
+Loop row 3: Port day → Render PAIR(pending + current), clear pending
+Loop row 4: AT SEA → Skip (filter)
+Loop row 5: Port day → Save as PENDING LEFT
+Loop row 6: Port day → Render PAIR(pending + current), clear pending
+(After loop) Pending still set? → Render FINAL ODD
 ```
 
-#### Index Calculation
+**Index Loop:**
 ```ampscript
-FOR @pairLoop = 1 TO @rowCount DO
-    SET @currentIndex = Add(Multiply(Subtract(@pairLoop, 1), 2), 1)
-    // Results: 1, 3, 5, 7, 9...
-    SET @rightIndex = Add(@currentIndex, 1)
-    // Results: 2, 4, 6, 8, 10...
+FOR @i = 1 TO @rowCount DO
+    SET @currentRow = Row(@rows, @i)
+    // Extract and clean port name
+    // IF AT SEA → NEXT @i (skip)
+    // IF port day AND no pending → Save as LEFT, set @PENDING_DAY
+    // IF port day AND pending exists → Load as RIGHT, render PAIR, clear pending
+NEXT @i
 ```
 
-**How it works:**
-- `@currentIndex` always points to odd-numbered rows (1, 3, 5, 7...)
-- `@rightIndex` always points to even-numbered rows (2, 4, 6, 8...)
-- Guard condition `IF @currentIndex <= @rowCount` prevents rendering beyond available data
+#### AT SEA Filtering
+```ampscript
+IF @CURRENT_PORT_NAME != "AT SEA" THEN
+    // Process port day (pending logic)
+ENDIF
+```
+
+All "AT SEA" port days are completely filtered from rendering. Port days are never lost:
+- Single port between AT SEA days becomes PENDING LEFT
+- Next port encountered pairs with pending, renders as PAIR
+- Final port with no pair renders as FINAL ODD after loop ends
 
 #### Variable Namespacing
 All extracted data uses `@LEFT_` and `@RIGHT_` prefixes to avoid conflicts:
 - `@LEFT_ITINERARY_DAY_NBR` vs `@RIGHT_ITINERARY_DAY_NBR`
 - `@LEFT_PORT_NAME` vs `@RIGHT_PORT_NAME`
 - `@LEFT_HAS_EXCURSIONS` vs `@RIGHT_HAS_EXCURSIONS`
+- `@PENDING_DAY` - Flag tracking if LEFT is waiting for RIGHT pairing
 
 ### Conditional Layouts
 
 #### Layout Detection Flag
 ```ampscript
-SET @HAS_RIGHT_DAY = IIF(@rightIndex <= @rowCount, "TRUE", "FALSE")
+IF EMPTY(@PENDING_DAY) THEN
+    // This is our first port day, save as LEFT
+ELSE
+    // We have a pending day, pair with this one, render PAIR, then clear pending
+ENDIF
+
+// After loop: IF NOT EMPTY(@PENDING_DAY) THEN render FINAL ODD
 ```
 
-This flag determines which HTML layout to render:
+The presence of `@PENDING_DAY` determines layout:
 
-#### PAIR Layout (`@HAS_RIGHT_DAY == "TRUE"`)
-Renders when both LEFT and RIGHT days exist (e.g., Days 1-2, 3-4, 5-6)
+#### PAIR Layout
+Renders when a LEFT port day has found a RIGHT port day to pair with
 
 **Structure:**
 ```
@@ -90,8 +110,8 @@ Renders when both LEFT and RIGHT days exist (e.g., Days 1-2, 3-4, 5-6)
 └─────────────────────────────┴─────────────────────────────┘
 ```
 
-#### FINAL ODD Layout (`@HAS_RIGHT_DAY == "FALSE"`)
-Renders when only a LEFT day exists (e.g., Day 7 on a 7-night cruise)
+#### FINAL ODD Layout
+Renders when a port day remains unpaired at the end of the loop (odd total port count)
 
 **Structure:**
 ```
@@ -129,16 +149,28 @@ SET @LEFT_HAS_EXCURSIONS = IIF(NOT EMPTY(@LEFT_ACTIVE_EXCURSIONS), "TRUE", "FALS
 - **Text**: "No excursions booked" (dark gray)
 - **Button**: Orange "BOOK NOW" CTA displayed below state indicator
 
-### Port Name Cleanup
+### Port Name Cleanup & AT SEA Filtering
 ```ampscript
-IF indexOf(@LEFT_PORT_NAME, ",") > 0 THEN
-    SET @LEFT_PORT_NAME = Substring(@LEFT_PORT_NAME, 1, Subtract(IndexOf(@LEFT_PORT_NAME, ","), 1))
+SET @CURRENT_PORT_NAME = Field(@currentRow, 'PORT_NAME')
+IF indexOf(@CURRENT_PORT_NAME, ",") > 0 THEN
+    SET @CURRENT_PORT_NAME = Substring(@CURRENT_PORT_NAME, 1, Subtract(IndexOf(@CURRENT_PORT_NAME, ","), 1))
+ENDIF
+SET @CURRENT_PORT_NAME = Trim(Uppercase(@CURRENT_PORT_NAME))
+
+IF @CURRENT_PORT_NAME != "AT SEA" THEN
+    // Process as port day (pairing logic)
 ENDIF
 ```
 
-Removes country names from port display:
+**Port name cleanup removes country suffix:**
 - Input: `"San Juan, Puerto Rico"`
-- Output: `"San Juan"`
+- After substring: `"San Juan"`
+
+**AT SEA filtering:**
+- Normalized to uppercase and trimmed
+- Comparison: `"AT SEA"` (exact match)
+- Handles variations: `"AT SEA "` (trailing space), `"at sea"` (lowercase)
+- Rows where port name IS "AT SEA" are completely skipped via `NEXT @i`
 
 ### Mobile Optimization
 
@@ -158,39 +190,51 @@ This CSS class (defined elsewhere) uses media queries to hide images on small sc
 
 ### Visual Separators
 
-Divider lines appear **only between PAIR layouts**:
-```ampscript
-%%[ IF @HAS_RIGHT_DAY == "TRUE" THEN ]%%
-<!-- Divider HTML -->
-%%[ ENDIF ]%%
-```
-
-This prevents an unnecessary divider after the final odd day.
+Dividers appear **only between PAIR layouts** and are now rendered inline as each pair renders (no separate conditional block needed).
 
 ## Example Scenarios
 
-### 4-Night Cruise (Even Days)
+### 4-Night Cruise (Even Port Days, No AT SEA)
 ```
-Loop Iteration 1: Days 1-2 → PAIR LAYOUT → Divider
-Loop Iteration 2: Days 3-4 → PAIR LAYOUT → Divider
-```
-
-### 5-Night Cruise (Odd Days)
-```
-Loop Iteration 1: Days 1-2 → PAIR LAYOUT → Divider
-Loop Iteration 2: Days 3-4 → PAIR LAYOUT → Divider
-Loop Iteration 3: Day 5    → FINAL ODD LAYOUT → NO Divider
+Row 1: Nassau        → Save as PENDING LEFT
+Row 2: Cozumel       → Pair with pending → Render PAIR, clear pending
+Row 3: Grand Cayman  → Save as PENDING LEFT
+Row 4: Jamaica       → Pair with pending → Render PAIR, clear pending
+(After loop) Pending empty → No FINAL ODD
 ```
 
-### 7-Night Cruise with Mixed States
+### 5-Night Cruise (Odd Port Days, No AT SEA)
 ```
-Day 1: Nassau        → BOOKED   → Image hidden on mobile
-Day 2: Cozumel       → UNBOOKED → "BOOK NOW" button shown
-Day 3: Grand Cayman  → BOOKED   → Image hidden on mobile
-Day 4: Jamaica       → UNBOOKED → "BOOK NOW" button shown
-Day 5: At Sea        → UNBOOKED → Shown if in DE
-Day 6: St. Thomas    → BOOKED   → Image hidden on mobile
-Day 7: San Juan      → UNBOOKED → FINAL ODD LAYOUT
+Row 1: Nassau        → Save as PENDING LEFT
+Row 2: Cozumel       → Pair with pending → Render PAIR, clear pending
+Row 3: Grand Cayman  → Save as PENDING LEFT
+Row 4: Jamaica       → Pair with pending → Render PAIR, clear pending
+Row 5: St. Thomas    → Save as PENDING LEFT
+(After loop) Pending set → Render FINAL ODD
+```
+
+### 7-Night Cruise with AT SEA Days
+```
+Row 1: Nassau        → Save as PENDING LEFT
+Row 2: AT SEA        → Skip (filter)
+Row 3: Cozumel       → Pair with pending → Render PAIR, clear pending
+Row 4: Grand Cayman  → Save as PENDING LEFT
+Row 5: Jamaica       → Pair with pending → Render PAIR, clear pending
+Row 6: AT SEA        → Skip (filter)
+Row 7: St. Thomas    → Save as PENDING LEFT
+(After loop) Pending set → Render FINAL ODD
+Result: 3 port days rendered in 2 pairs (PAIR + PAIR + FINAL ODD), 2 AT SEA days hidden
+```
+
+### Mixed Booking States with AT SEA
+```
+Row 1: Nassau        (BOOKED)   → Save as PENDING LEFT
+Row 2: Cozumel       (UNBOOKED) → Pair → Render PAIR (booked+unbooked), clear pending
+Row 3: AT SEA        → Skip
+Row 4: Grand Cayman  (BOOKED)   → Save as PENDING LEFT
+Row 5: Jamaica       (BOOKED)   → Pair → Render PAIR (booked+booked), clear pending
+Row 6: St. Thomas    (UNBOOKED) → Save as PENDING LEFT
+(After loop) Pending set → Render FINAL ODD (unbooked)
 ```
 
 ## Date Calculations
@@ -212,15 +256,15 @@ Displayed as: `DAY 1: FEB 15` using `FormatDate(@LEFT_CURRENT_DAY_DATE, 'M')`
 
 ### Loop Efficiency
 - **Single DE Query**: All data retrieved once at the top
-- **Index-Based Access**: Direct row access via `Row(@rows, @index)`
-- **Guard Conditions**: Prevents unnecessary iterations
-- **No Nested Loops**: Linear time complexity O(n/2)
+- **Sequential Processing**: Each row processed exactly once (O(n) complexity)
+- **No Index Math**: Direct `Row(@rows, @i)` access avoids calculation overhead
+- **Early Exit Logic**: AT SEA rows exit immediately with `NEXT @i`
 
 ### Variable Scope
 All variables are set **inside the loop** to ensure fresh data per iteration:
-- Prevents data bleed between iterations
-- Ensures conditional layouts receive correct context
-- No variable persistence issues
+- Pending day state persists across iterations (intentional for pairing)
+- LEFT/RIGHT data cleared when pair renders
+- Prevents data bleed between unrelated pairs
 
 ## CTA Configuration
 
@@ -237,16 +281,18 @@ All variables are set **inside the loop** to ensure fresh data per iteration:
 
 When testing this component, verify:
 
-- [ ] **Even day counts** (4, 6, 8 nights): All pairs render correctly
-- [ ] **Odd day counts** (5, 7, 9 nights): Final odd layout displays
+- [ ] **Even port count** (2, 4, 6 port days): All pairs render correctly, no FINAL ODD
+- [ ] **Odd port count** (3, 5, 7 port days): All pairs render + FINAL ODD for unpaired day
+- [ ] **AT SEA filtering**: AT SEA rows never render, port days after AT SEA pair correctly
 - [ ] **Booked state**: Dark background, checkmark, image hidden on mobile
 - [ ] **Unbooked state**: Gray background, empty circle, "BOOK NOW" button visible
 - [ ] **Mixed states**: Different states per day render independently
+- [ ] **Mixed with AT SEA**: Port days not lost when surrounded by AT SEA rows
 - [ ] **Date calculations**: All dates increment correctly from sail date
 - [ ] **Port names**: Country names removed (e.g., "San Juan" not "San Juan, Puerto Rico")
-- [ ] **Dividers**: Appear between pairs, absent after final odd day
 - [ ] **Mobile view**: Images hidden when excursions booked (all columns/layouts)
-- [ ] **No data scenario**: Component gracefully handles `@rowCount = 0`
+- [ ] **No port days scenario**: Component gracefully handles zero port days (all AT SEA)
+- [ ] **Single port day**: Renders as FINAL ODD after loop
 
 ## Maintenance Notes
 
@@ -258,21 +304,25 @@ The code includes phase markers for easy rollback:
 
 ### Common Issues
 
-#### Issue: Loop only renders first iteration
-**Cause**: `@currentIndex` guard condition failing  
-**Fix**: Verify `FOR @pairLoop = 1 TO @rowCount` and index calculation
+#### Issue: Loop only renders first port day
+**Cause**: AT SEA filtering skipping all rows or pending logic failing  
+**Fix**: Verify port names are cleaned and normalized with `Trim(Uppercase())`
+
+#### Issue: Port days are missing/lost
+**Cause**: AT SEA rows adjacent to port days causing pending logic to fail  
+**Fix**: Check that pending day is properly maintained and next port is correctly paired
 
 #### Issue: Booked state not displaying
 **Cause**: `ACTIVE_EXCURSIONS` field format mismatch  
 **Fix**: Confirm DE field contains pipe-delimited data or is truly empty (not spaces)
 
-#### Issue: Final odd day renders as pair
-**Cause**: `@HAS_RIGHT_DAY` flag incorrectly set  
-**Fix**: Check `@rightIndex <= @rowCount` logic
+#### Issue: FINAL ODD doesn't render
+**Cause**: Pending flag not checked after loop  
+**Fix**: Ensure final conditional `IF NOT EMPTY(@PENDING_DAY)` exists after loop ends
 
-#### Issue: Divider appears after last day
-**Cause**: Divider not wrapped in `IF @HAS_RIGHT_DAY == "TRUE"` conditional  
-**Fix**: Ensure divider is inside conditional block
+#### Issue: AT SEA days rendering
+**Cause**: Port name comparison failing due to case or whitespace  
+**Fix**: Verify `Trim(Uppercase())` is applied before `!= "AT SEA"` comparison
 
 ## Related Documentation
 
