@@ -21,84 +21,61 @@ SET @rowCount = RowCount(@rows)
 </table>
 
 %%[
-/* ===== 2-COLUMN LAYOUT ===== */
+/* ===== 2-COLUMN LAYOUT WITH PENDING DAY APPROACH ===== */
 /* Check if we have any excursion data to display */
 IF @rowCount > 0 THEN
     
-	/* Loop through possible pairs (guarded by @currentIndex) */
-	FOR @pairLoop = 1 TO @rowCount DO
-		/* Derive left index as 1,3,5... */
-		SET @currentIndex = Add(Multiply(Subtract(@pairLoop, 1), 2), 1)
-		IF @currentIndex <= @rowCount THEN
+    /* Initialize pending day tracker */
+    SET @PENDING_DAY = ""
+    
+    /* Loop through ALL rows sequentially */
+    FOR @i = 1 TO @rowCount DO
+        SET @currentRow = Row(@rows, @i)
+        SET @CURRENT_PORT_NAME = Field(@currentRow, 'PORT_NAME')
         
-        /* ========== LEFT COLUMN (ALWAYS EXISTS) ========== */
-        SET @leftRow = Row(@rows, @currentIndex)
-        SET @LEFT_ACTIVE_EXCURSIONS = Field(@leftRow, 'ACTIVE_EXCURSIONS')
-        SET @LEFT_SHIP_CODE = Field(@leftRow, 'SHIP_CODE')
-        SET @LEFT_SAIL_DATE = Field(@leftRow, 'SAIL_DATE')
-        SET @LEFT_ITINERARY_DAY_NBR = Field(@leftRow, 'ITINERARY_DAY_NBR')
-        
-        /* Get and clean left port name */
-        SET @LEFT_PORT_NAME = Field(@leftRow, 'PORT_NAME')
-        IF indexOf(@LEFT_PORT_NAME, ",") > 0 THEN
-            SET @LEFT_PORT_NAME = Substring(@LEFT_PORT_NAME, 1, Subtract(IndexOf(@LEFT_PORT_NAME, ","), 1))
+        /* Clean port name */
+        IF indexOf(@CURRENT_PORT_NAME, ",") > 0 THEN
+            SET @CURRENT_PORT_NAME = Substring(@CURRENT_PORT_NAME, 1, Subtract(IndexOf(@CURRENT_PORT_NAME, ","), 1))
         ENDIF
+        SET @CURRENT_PORT_NAME = Trim(Uppercase(@CURRENT_PORT_NAME))
         
-        /* Extract additional left fields */
-        SET @LEFT_PORT_CODE = Field(@leftRow, 'PORT_CODE')
-        SET @LEFT_ONBOARD_CREDIT = Field(@leftRow, 'ONBOARD_CREDIT')
-        SET @LEFT_CC_LOYALTY_ACCOUNT_NBR = Field(@leftRow, 'CC_LOYALTY_ACCOUNT_NBR')
-        SET @LEFT_RDSS_VERSION = Field(@leftRow, 'RDSS_VERSION')
-        
-        /* Calculate left day date */
-        SET @LEFT_CURRENT_DAY_DATE = DateAdd(@LEFT_SAIL_DATE, Subtract(@LEFT_ITINERARY_DAY_NBR, 1), 'D')
-        
-        /* Check if left day has excursions booked */
-        SET @LEFT_HAS_EXCURSIONS = IIF(NOT EMPTY(@LEFT_ACTIVE_EXCURSIONS), "TRUE", "FALSE")
-        
-        /* ========== RIGHT COLUMN (MAY NOT EXIST) ========== */
-        SET @rightIndex = Add(@currentIndex, 1)
-        
-        /* Check if right column day exists */
-        IF @rightIndex <= @rowCount THEN
-            SET @rightRow = Row(@rows, @rightIndex)
-            SET @RIGHT_ACTIVE_EXCURSIONS = Field(@rightRow, 'ACTIVE_EXCURSIONS')
-            SET @RIGHT_SHIP_CODE = Field(@rightRow, 'SHIP_CODE')
-            SET @RIGHT_SAIL_DATE = Field(@rightRow, 'SAIL_DATE')
-            SET @RIGHT_ITINERARY_DAY_NBR = Field(@rightRow, 'ITINERARY_DAY_NBR')
+        /* ========== FILTER: Skip AT SEA days ========== */
+        IF @CURRENT_PORT_NAME != "AT SEA" THEN
+            /* This is a port day */
             
-            /* Get and clean right port name */
-            SET @RIGHT_PORT_NAME = Field(@rightRow, 'PORT_NAME')
-            IF indexOf(@RIGHT_PORT_NAME, ",") > 0 THEN
-                SET @RIGHT_PORT_NAME = Substring(@RIGHT_PORT_NAME, 1, Subtract(IndexOf(@RIGHT_PORT_NAME, ","), 1))
-            ENDIF
-            
-            /* Extract additional right fields */
-            SET @RIGHT_PORT_CODE = Field(@rightRow, 'PORT_CODE')
-            SET @RIGHT_ONBOARD_CREDIT = Field(@rightRow, 'ONBOARD_CREDIT')
-            SET @RIGHT_CC_LOYALTY_ACCOUNT_NBR = Field(@rightRow, 'CC_LOYALTY_ACCOUNT_NBR')
-            SET @RIGHT_RDSS_VERSION = Field(@rightRow, 'RDSS_VERSION')
-            
-            /* Calculate right day date */
-            SET @RIGHT_CURRENT_DAY_DATE = DateAdd(@RIGHT_SAIL_DATE, Subtract(@RIGHT_ITINERARY_DAY_NBR, 1), 'D')
-            
-            /* Check if right day has excursions booked */
-            SET @RIGHT_HAS_EXCURSIONS = IIF(NOT EMPTY(@RIGHT_ACTIVE_EXCURSIONS), "TRUE", "FALSE")
-            
-            SET @HAS_RIGHT_DAY = "TRUE"
-        ELSE
-            /* Right column is empty - set default values */
-            SET @HAS_RIGHT_DAY = "FALSE"
-            SET @RIGHT_ITINERARY_DAY_NBR = ""
-            SET @RIGHT_PORT_NAME = ""
-            SET @RIGHT_HAS_EXCURSIONS = "FALSE"
-		ENDIF
+            IF EMPTY(@PENDING_DAY) THEN
+                /* No pending day - save this as LEFT for future pair */
+                SET @PENDING_DAY = "TRUE"
+                SET @LEFT_ACTIVE_EXCURSIONS = Field(@currentRow, 'ACTIVE_EXCURSIONS')
+                SET @LEFT_SHIP_CODE = Field(@currentRow, 'SHIP_CODE')
+                SET @LEFT_SAIL_DATE = Field(@currentRow, 'SAIL_DATE')
+                SET @LEFT_ITINERARY_DAY_NBR = Field(@currentRow, 'ITINERARY_DAY_NBR')
+                SET @LEFT_PORT_NAME = @CURRENT_PORT_NAME
+                SET @LEFT_PORT_CODE = Field(@currentRow, 'PORT_CODE')
+                SET @LEFT_ONBOARD_CREDIT = Field(@currentRow, 'ONBOARD_CREDIT')
+                SET @LEFT_CC_LOYALTY_ACCOUNT_NBR = Field(@currentRow, 'CC_LOYALTY_ACCOUNT_NBR')
+                SET @LEFT_RDSS_VERSION = Field(@currentRow, 'RDSS_VERSION')
+                SET @LEFT_CURRENT_DAY_DATE = DateAdd(@LEFT_SAIL_DATE, Subtract(@LEFT_ITINERARY_DAY_NBR, 1), 'D')
+                SET @LEFT_HAS_EXCURSIONS = IIF(NOT EMPTY(@LEFT_ACTIVE_EXCURSIONS), "TRUE", "FALSE")
+            ELSE
+                /* We have a pending day - this becomes RIGHT, render PAIR */
+                SET @RIGHT_ACTIVE_EXCURSIONS = Field(@currentRow, 'ACTIVE_EXCURSIONS')
+                SET @RIGHT_SHIP_CODE = Field(@currentRow, 'SHIP_CODE')
+                SET @RIGHT_SAIL_DATE = Field(@currentRow, 'SAIL_DATE')
+                SET @RIGHT_ITINERARY_DAY_NBR = Field(@currentRow, 'ITINERARY_DAY_NBR')
+                SET @RIGHT_PORT_NAME = @CURRENT_PORT_NAME
+                SET @RIGHT_PORT_CODE = Field(@currentRow, 'PORT_CODE')
+                SET @RIGHT_ONBOARD_CREDIT = Field(@currentRow, 'ONBOARD_CREDIT')
+                SET @RIGHT_CC_LOYALTY_ACCOUNT_NBR = Field(@currentRow, 'CC_LOYALTY_ACCOUNT_NBR')
+                SET @RIGHT_RDSS_VERSION = Field(@currentRow, 'RDSS_VERSION')
+                SET @RIGHT_CURRENT_DAY_DATE = DateAdd(@RIGHT_SAIL_DATE, Subtract(@RIGHT_ITINERARY_DAY_NBR, 1), 'D')
+                SET @RIGHT_HAS_EXCURSIONS = IIF(NOT EMPTY(@RIGHT_ACTIVE_EXCURSIONS), "TRUE", "FALSE")
+                SET @HAS_RIGHT_DAY = "TRUE"
 ]%%
 
-<!-- CONDITIONAL LAYOUT - PAIR vs FINAL ODD DAY -->
-%%[ IF @HAS_RIGHT_DAY == "TRUE" THEN ]%%
+<!-- RENDER PAIR LAYOUT -->
 
-<!-- ========== PAIR LAYOUT: Two-column (Days 1-2, 3-4, etc.) ========== -->
+<!-- ========== PAIR LAYOUT: Two-column ========== -->
 <table cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" role="presentation" style="margin: 0 auto;">
 	<tr>
 		<td align="center" style="padding: 0 24px 20px;">
@@ -261,7 +238,18 @@ IF @rowCount > 0 THEN
 	</tr>
 </table>
 
-%%[ ELSE ]%%
+%%[
+                /* Clear pending after rendering pair */
+                SET @PENDING_DAY = ""
+            ENDIF
+        ENDIF
+    NEXT @i
+ENDIF
+]%%
+
+<!-- Check for unpaired final day -->
+%%[ IF @rowCount > 0 AND NOT EMPTY(@PENDING_DAY) THEN ]%%
+%%[ SET @HAS_RIGHT_DAY = "FALSE" ]%%
 
 <!-- ========== FINAL ODD DAY LAYOUT: Image left (50%), Content right (50%) ========== -->
 <table cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" role="presentation" style="margin: 0 auto;">
@@ -355,37 +343,7 @@ IF @rowCount > 0 THEN
 </table>
 
 %%[ ENDIF ]%%
-<!-- LAYOUT CONDITIONAL COMPLETE -->
-
-%%[ IF @HAS_RIGHT_DAY == "TRUE" THEN ]%%
-<!-- Divider line between row pairs -->
-<table cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" role="presentation" style="margin: 0 auto;">
-    <tr>
-        <td class="mobile-padding-0-40" align="center" style="padding: 10px 24px 20px;">
-            <table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
-                <tr>
-					<td align="center">
-						<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
-							<tr>
-								<td style="border-bottom: 1px solid #d6d6d6; height: 0;"></td>
-							</tr>
-						</table>
-					</td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-</table>
-%%[ ENDIF ]%%
-
-%%[
-    /* ===== END OF PAIRED DAY RENDERING ===== */
-    /* Close guarded render and move to next pair */
-	ENDIF
-	NEXT @pairLoop
-    
-ENDIF /* End of @rowCount check */
-]%%
+<!-- End of FINAL ODD DAY LAYOUT -->
 
 <!-- LOOP COMPLETE -->
 
