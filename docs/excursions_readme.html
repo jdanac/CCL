@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shore Excursions Checklist Component - Overview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        
+        h1 {
+            color: #0f0f10;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #e87435;
+        }
+        
+        h2 {
+            color: #0f0f10;
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        h3 {
+            color: #333;
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        ul, ol {
+            margin-bottom: 15px;
+            margin-left: 25px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #d14;
+        }
+        
+        pre {
+            background-color: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            color: #abb2bf;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: white;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #e87435;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .toc {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            border-left: 4px solid #e87435;
+        }
+        
+        .toc h3 {
+            margin-top: 0;
+            color: #e87435;
+        }
+        
+        .toc ul {
+            list-style-type: none;
+            margin-left: 0;
+        }
+        
+        .toc a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        .diagram {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 3px;
+        }
+        
+        .warning {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 3px;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 3px;
+        }
+        
+        .checklist {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .checklist li {
+            list-style-type: none;
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .checklist li:before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            font-size: 1.2em;
+            color: #e87435;
+        }
+        
+        a {
+            color: #e87435;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #e87435;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .back-to-top:hover {
+            background-color: #d16330;
+            text-decoration: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="top">Shore Excursions Checklist Component - Overview</h1>
+        
+        <div class="toc">
+            <h3>Table of Contents</h3>
+            <ul>
+                <li><a href="#purpose">Purpose</a></li>
+                <li><a href="#data-source">Data Source</a></li>
+                <li><a href="#architecture">Component Architecture</a></li>
+                <li><a href="#conditional-layouts">Conditional Layouts</a></li>
+                <li><a href="#state-logic">Excursion State Logic</a></li>
+                <li><a href="#mobile">Mobile Optimization</a></li>
+                <li><a href="#examples">Example Scenarios</a></li>
+                <li><a href="#dates">Date Calculations</a></li>
+                <li><a href="#performance">Performance Considerations</a></li>
+                <li><a href="#cta">CTA Configuration</a></li>
+                <li><a href="#testing">Testing Checklist</a></li>
+                <li><a href="#maintenance">Maintenance Notes</a></li>
+                <li><a href="#related">Related Documentation</a></li>
+            </ul>
+        </div>
+        
+        <h2 id="purpose">Purpose</h2>
+        <p>The Shore Excursions component dynamically generates a personalized checklist of port days for each guest's sailing, displaying their excursion booking status and providing quick access to book additional excursions.</p>
+        
+        <h2 id="data-source">Data Source</h2>
+        
+        <h3>Data Extension</h3>
+        <ul>
+            <li><strong>Name:</strong> <code>SHOREX_Excursions_Lookup</code></li>
+            <li><strong>Query Keys:</strong>
+                <ul>
+                    <li><code>SHIP_CODE</code> - Ship identifier</li>
+                    <li><code>SAIL_DATE</code> - Sailing departure date</li>
+                    <li><code>CONSUMER_ID</code> - Guest identifier</li>
+                </ul>
+            </li>
+            <li><strong>Sort Order:</strong> <code>ITINERARY_DAY_NBR ASC</code> (Days rendered in sequential order)</li>
+        </ul>
+        
+        <h3>Key Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Description</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>ITINERARY_DAY_NBR</code></td>
+                    <td>Day number (1-based)</td>
+                    <td>Loop iteration, day header display</td>
+                </tr>
+                <tr>
+                    <td><code>PORT_NAME</code></td>
+                    <td>Port of call name</td>
+                    <td>Display (cleaned to remove country)</td>
+                </tr>
+                <tr>
+                    <td><code>PORT_CODE</code></td>
+                    <td>Port identifier</td>
+                    <td>Available for URL parameters</td>
+                </tr>
+                <tr>
+                    <td><code>ACTIVE_EXCURSIONS</code></td>
+                    <td>Pipe-delimited excursion IDs or empty</td>
+                    <td>Determines booked/unbooked state</td>
+                </tr>
+                <tr>
+                    <td><code>SAIL_DATE</code></td>
+                    <td>Sailing departure date</td>
+                    <td>Date calculations</td>
+                </tr>
+                <tr>
+                    <td><code>ONBOARD_CREDIT</code></td>
+                    <td>Available credit amount</td>
+                    <td>Available for future features</td>
+                </tr>
+                <tr>
+                    <td><code>CC_LOYALTY_ACCOUNT_NBR</code></td>
+                    <td>Captain's Club number</td>
+                    <td>Available for URL parameters</td>
+                </tr>
+                <tr>
+                    <td><code>RDSS_VERSION</code></td>
+                    <td>Data version identifier</td>
+                    <td>Tracking</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3>Required Initialization Variables</h3>
+        <div class="warning">
+            <p>These variables <strong>must</strong> be set by <code>SHOREX_ampscript.html</code> before this component is rendered:</p>
+            <ul>
+                <li><code>@SHIP_CODE</code></li>
+                <li><code>@SHIP_DEPARTURE_DATE</code></li>
+                <li><code>@CONSUMER_ID</code></li>
+            </ul>
+        </div>
+        
+        <h2 id="architecture">Component Architecture</h2>
+        
+        <h3>Loop Logic</h3>
+        
+        <h4>Two-Column Pairing System</h4>
+        <p>The component renders shore excursion days in a <strong>2-column layout</strong> by processing data in pairs:</p>
+        
+        <pre>Iteration 1: Days 1 & 2 (LEFT & RIGHT columns)
+Iteration 2: Days 3 & 4 (LEFT & RIGHT columns)
+Iteration 3: Days 5 & 6 (LEFT & RIGHT columns)
+...</pre>
+        
+        <h4>Index Calculation</h4>
+        <pre><code>FOR @pairLoop = 1 TO @rowCount DO
+    SET @currentIndex = Add(Multiply(Subtract(@pairLoop, 1), 2), 1)
+    // Results: 1, 3, 5, 7, 9...
+    SET @rightIndex = Add(@currentIndex, 1)
+    // Results: 2, 4, 6, 8, 10...</code></pre>
+        
+        <p><strong>How it works:</strong></p>
+        <ul>
+            <li><code>@currentIndex</code> always points to odd-numbered rows (1, 3, 5, 7...)</li>
+            <li><code>@rightIndex</code> always points to even-numbered rows (2, 4, 6, 8...)</li>
+            <li>Guard condition <code>IF @currentIndex <= @rowCount</code> prevents rendering beyond available data</li>
+        </ul>
+        
+        <h4>Variable Namespacing</h4>
+        <p>All extracted data uses <code>@LEFT_</code> and <code>@RIGHT_</code> prefixes to avoid conflicts:</p>
+        <ul>
+            <li><code>@LEFT_ITINERARY_DAY_NBR</code> vs <code>@RIGHT_ITINERARY_DAY_NBR</code></li>
+            <li><code>@LEFT_PORT_NAME</code> vs <code>@RIGHT_PORT_NAME</code></li>
+            <li><code>@LEFT_HAS_EXCURSIONS</code> vs <code>@RIGHT_HAS_EXCURSIONS</code></li>
+        </ul>
+        
+        <h2 id="conditional-layouts">Conditional Layouts</h2>
+        
+        <h3>Layout Detection Flag</h3>
+        <pre><code>SET @HAS_RIGHT_DAY = IIF(@rightIndex <= @rowCount, "TRUE", "FALSE")</code></pre>
+        
+        <p>This flag determines which HTML layout to render:</p>
+        
+        <h3>PAIR Layout (<code>@HAS_RIGHT_DAY == "TRUE"</code>)</h3>
+        <p>Renders when both LEFT and RIGHT days exist (e.g., Days 1-2, 3-4, 5-6)</p>
+        
+        <div class="diagram">┌─────────────────────────────┬─────────────────────────────┐
+│ LEFT COLUMN (50%)           │ RIGHT COLUMN (50%)          │
+├─────────────────────────────┼─────────────────────────────┤
+│ • Day header + date         │ • Day header + date         │
+│ • Image                     │ • Image                     │
+│ • Port name                 │ • Port name                 │
+│ • Booked/Unbooked state     │ • Booked/Unbooked state     │
+│ • Book Now button           │ • Book Now button           │
+└─────────────────────────────┴─────────────────────────────┘</div>
+        
+        <h3>FINAL ODD Layout (<code>@HAS_RIGHT_DAY == "FALSE"</code>)</h3>
+        <p>Renders when only a LEFT day exists (e.g., Day 7 on a 7-night cruise)</p>
+        
+        <div class="diagram">┌─────────────────────────────┬─────────────────────────────┐
+│ IMAGE COLUMN (50%)          │ CONTENT COLUMN (50%)        │
+├─────────────────────────────┼─────────────────────────────┤
+│ • Image only                │ • Day header + date         │
+│                             │ • Port name                 │
+│                             │ • Booked/Unbooked state     │
+│                             │ • Book Now button           │
+└─────────────────────────────┴─────────────────────────────┘</div>
+        
+        <h2 id="state-logic">Excursion State Logic</h2>
+        
+        <h3>State Detection</h3>
+        <pre><code>SET @LEFT_HAS_EXCURSIONS = IIF(NOT EMPTY(@LEFT_ACTIVE_EXCURSIONS), "TRUE", "FALSE")</code></pre>
+        
+        <ul>
+            <li><strong>BOOKED</strong> (<code>@LEFT_HAS_EXCURSIONS == "TRUE"</code>): <code>ACTIVE_EXCURSIONS</code> field contains pipe-delimited data</li>
+            <li><strong>UNBOOKED</strong> (<code>@LEFT_HAS_EXCURSIONS == "FALSE"</code>): <code>ACTIVE_EXCURSIONS</code> field is empty/null</li>
+        </ul>
+        
+        <h3>Visual States</h3>
+        
+        <h4>Booked State</h4>
+        <ul>
+            <li><strong>Background:</strong> Dark navy (<code>#081632</code>)</li>
+            <li><strong>Icon:</strong> Checkmark (&#10003;) in orange circle</li>
+            <li><strong>Text:</strong> "Excursions booked" (white)</li>
+            <li><strong>Mobile Behavior:</strong> Image hidden via <code>hide-booked-image-mobile</code> CSS class</li>
+        </ul>
+        
+        <h4>Unbooked State</h4>
+        <ul>
+            <li><strong>Background:</strong> Light gray (<code>#d6d6d6</code>)</li>
+            <li><strong>Icon:</strong> Empty circle (light gray)</li>
+            <li><strong>Text:</strong> "No excursions booked" (dark gray)</li>
+            <li><strong>Button:</strong> Orange "BOOK NOW" CTA displayed below state indicator</li>
+        </ul>
+        
+        <h3>Port Name Cleanup</h3>
+        <pre><code>IF indexOf(@LEFT_PORT_NAME, ",") > 0 THEN
+    SET @LEFT_PORT_NAME = Substring(@LEFT_PORT_NAME, 1, Subtract(IndexOf(@LEFT_PORT_NAME, ","), 1))
+ENDIF</code></pre>
+        
+        <p>Removes country names from port display:</p>
+        <ul>
+            <li>Input: <code>"San Juan, Puerto Rico"</code></li>
+            <li>Output: <code>"San Juan"</code></li>
+        </ul>
+        
+        <h2 id="mobile">Mobile Optimization</h2>
+        
+        <h3>Responsive Images</h3>
+        <p>Images are conditionally hidden on mobile when excursions are booked:</p>
+        
+        <pre><code>&lt;tr%%[ IF @LEFT_HAS_EXCURSIONS == "TRUE" THEN ]%% class="hide-booked-image-mobile"%%[ ENDIF ]%%&gt;</code></pre>
+        
+        <p><strong>Applied to:</strong></p>
+        <ul>
+            <li>LEFT column image in PAIR layout</li>
+            <li>RIGHT column image in PAIR layout</li>
+            <li>Image column in FINAL ODD layout</li>
+        </ul>
+        
+        <p>This CSS class (defined elsewhere) uses media queries to hide images on small screens when the guest has already booked excursions, prioritizing content over imagery.</p>
+        
+        <h3>Visual Separators</h3>
+        <p>Divider lines appear <strong>only between PAIR layouts</strong>:</p>
+        <pre><code>%%[ IF @HAS_RIGHT_DAY == "TRUE" THEN ]%%
+&lt;!-- Divider HTML --&gt;
+%%[ ENDIF ]%%</code></pre>
+        
+        <p>This prevents an unnecessary divider after the final odd day.</p>
+        
+        <h2 id="examples">Example Scenarios</h2>
+        
+        <h3>4-Night Cruise (Even Days)</h3>
+        <pre>Loop Iteration 1: Days 1-2 → PAIR LAYOUT → Divider
+Loop Iteration 2: Days 3-4 → PAIR LAYOUT → Divider</pre>
+        
+        <h3>5-Night Cruise (Odd Days)</h3>
+        <pre>Loop Iteration 1: Days 1-2 → PAIR LAYOUT → Divider
+Loop Iteration 2: Days 3-4 → PAIR LAYOUT → Divider
+Loop Iteration 3: Day 5    → FINAL ODD LAYOUT → NO Divider</pre>
+        
+        <h3>7-Night Cruise with Mixed States</h3>
+        <pre>Day 1: Nassau        → BOOKED   → Image hidden on mobile
+Day 2: Cozumel       → UNBOOKED → "BOOK NOW" button shown
+Day 3: Grand Cayman  → BOOKED   → Image hidden on mobile
+Day 4: Jamaica       → UNBOOKED → "BOOK NOW" button shown
+Day 5: At Sea        → UNBOOKED → Shown if in DE
+Day 6: St. Thomas    → BOOKED   → Image hidden on mobile
+Day 7: San Juan      → UNBOOKED → FINAL ODD LAYOUT</pre>
+        
+        <h2 id="dates">Date Calculations</h2>
+        
+        <h3>Day Date Display</h3>
+        <pre><code>SET @LEFT_CURRENT_DAY_DATE = DateAdd(@LEFT_SAIL_DATE, Subtract(@LEFT_ITINERARY_DAY_NBR, 1), 'D')</code></pre>
+        
+        <p><strong>Example:</strong></p>
+        <ul>
+            <li>Sail Date: <code>2026-02-15</code></li>
+            <li>Day 1: <code>2026-02-15</code> (sail date + 0 days)</li>
+            <li>Day 2: <code>2026-02-16</code> (sail date + 1 day)</li>
+            <li>Day 7: <code>2026-02-21</code> (sail date + 6 days)</li>
+        </ul>
+        
+        <p>Displayed as: <code>DAY 1: FEB 15</code> using <code>FormatDate(@LEFT_CURRENT_DAY_DATE, 'M')</code></p>
+        
+        <h2 id="performance">Performance Considerations</h2>
+        
+        <h3>Loop Efficiency</h3>
+        <ul>
+            <li><strong>Single DE Query:</strong> All data retrieved once at the top</li>
+            <li><strong>Index-Based Access:</strong> Direct row access via <code>Row(@rows, @index)</code></li>
+            <li><strong>Guard Conditions:</strong> Prevents unnecessary iterations</li>
+            <li><strong>No Nested Loops:</strong> Linear time complexity O(n/2)</li>
+        </ul>
+        
+        <h3>Variable Scope</h3>
+        <p>All variables are set <strong>inside the loop</strong> to ensure fresh data per iteration:</p>
+        <ul>
+            <li>Prevents data bleed between iterations</li>
+            <li>Ensures conditional layouts receive correct context</li>
+            <li>No variable persistence issues</li>
+        </ul>
+        
+        <h2 id="cta">CTA Configuration</h2>
+        
+        <h3>Primary CTA: "BOOK NOW"</h3>
+        <ul>
+            <li><strong>Color:</strong> Orange (<code>#e87435</code>)</li>
+            <li><strong>Visibility:</strong> Shown in both BOOKED and UNBOOKED states (below state indicator)</li>
+            <li><strong>URL:</strong> Placeholder tracking link (must be updated with dynamic parameters)</li>
+        </ul>
+        
+        <h3>Secondary CTA: "SEE ALL EXCURSIONS"</h3>
+        <ul>
+            <li><strong>Location:</strong> Below all day renderings (outside loop)</li>
+            <li><strong>Purpose:</strong> Fallback navigation to full excursion catalog</li>
+        </ul>
+        
+        <h2 id="testing">Testing Checklist</h2>
+        
+        <div class="checklist">
+            <p>When testing this component, verify:</p>
+            <ul>
+                <li><strong>Even day counts</strong> (4, 6, 8 nights): All pairs render correctly</li>
+                <li><strong>Odd day counts</strong> (5, 7, 9 nights): Final odd layout displays</li>
+                <li><strong>Booked state:</strong> Dark background, checkmark, image hidden on mobile</li>
+                <li><strong>Unbooked state:</strong> Gray background, empty circle, "BOOK NOW" button visible</li>
+                <li><strong>Mixed states:</strong> Different states per day render independently</li>
+                <li><strong>Date calculations:</strong> All dates increment correctly from sail date</li>
+                <li><strong>Port names:</strong> Country names removed (e.g., "San Juan" not "San Juan, Puerto Rico")</li>
+                <li><strong>Dividers:</strong> Appear between pairs, absent after final odd day</li>
+                <li><strong>Mobile view:</strong> Images hidden when excursions booked (all columns/layouts)</li>
+                <li><strong>No data scenario:</strong> Component gracefully handles <code>@rowCount = 0</code></li>
+            </ul>
+        </div>
+        
+        <h2 id="maintenance">Maintenance Notes</h2>
+        
+        <h3>Rollback Points</h3>
+        <p>The code includes phase markers for easy rollback:</p>
+        <ul>
+            <li><code>/* ===== BASIC LOOP ===== */</code> - Initial data query</li>
+            <li><code>/* ===== 2-COLUMN LAYOUT ===== */</code> - Loop logic start</li>
+            <li>Comments mark PAIR vs FINAL ODD layout blocks</li>
+        </ul>
+        
+        <h3>Common Issues</h3>
+        
+        <h4>Issue: Loop only renders first iteration</h4>
+        <p><strong>Cause:</strong> <code>@currentIndex</code> guard condition failing</p>
+        <p><strong>Fix:</strong> Verify <code>FOR @pairLoop = 1 TO @rowCount</code> and index calculation</p>
+        
+        <h4>Issue: Booked state not displaying</h4>
+        <p><strong>Cause:</strong> <code>ACTIVE_EXCURSIONS</code> field format mismatch</p>
+        <p><strong>Fix:</strong> Confirm DE field contains pipe-delimited data or is truly empty (not spaces)</p>
+        
+        <h4>Issue: Final odd day renders as pair</h4>
+        <p><strong>Cause:</strong> <code>@HAS_RIGHT_DAY</code> flag incorrectly set</p>
+        <p><strong>Fix:</strong> Check <code>@rightIndex <= @rowCount</code> logic</p>
+        
+        <h4>Issue: Divider appears after last day</h4>
+        <p><strong>Cause:</strong> Divider not wrapped in <code>IF @HAS_RIGHT_DAY == "TRUE"</code> conditional</p>
+        <p><strong>Fix:</strong> Ensure divider is inside conditional block</p>
+        
+        <h2 id="related">Related Documentation</h2>
+        <ul>
+            <li><strong>SHOREX_AMPSCRIPT_VARIABLES.md</strong> - Complete variable reference</li>
+            <li><strong>SHOREX_DATA_FLOW.md</strong> - System architecture and data flow</li>
+            <li><strong>SHOREX_ampscript.html</strong> - Initialization file (required dependency)</li>
+        </ul>
+        
+        <h2>Future Enhancements (Not Yet Implemented)</h2>
+        <ul>
+            <li>Dynamic image URLs per port (currently hardcoded)</li>
+            <li>Onboard credit display integration</li>
+            <li>Deep linking to specific excursion booking page per day</li>
+            <li>Analytics tracking on CTA clicks</li>
+            <li>Accessibility improvements (ARIA labels)</li>
+        </ul>
+    </div>
+    
+    <a href="#top" class="back-to-top">↑ Back to Top</a>
+</body>
+</html>
