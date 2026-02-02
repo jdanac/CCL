@@ -4,9 +4,6 @@
 # GUI generated output
 /GUI_Output/
 
-# AMPscript integrated versions (local testing only)
-/AMP-Integrated/
-
 # AMPscript reference templates (source files with ampscript)
 /amp-references/
 

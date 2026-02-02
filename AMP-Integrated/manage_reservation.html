@@ -1,0 +1,118 @@
+<!-- ====== MANAGE RESERVATION COMPONENT ====== -->%%[
+SET @IMG_FUTURE_REGION = "https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/2ef8fd0e-0972-433f-ad14-4f984e7036d6.png"
+SET @IMG_FUTURE_NIGHTS = "https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/ef14ace5-9b1e-4a39-ac05-1df22c7d0a4e.png"
+SET @IMG_FUTURE_SHIP = "https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/d8f2b2ea-73f1-4646-82b4-a706ffd71ff9.png"
+
+IF (@SHIP_CODE == "EG" AND @DEPARTURE_DATE_FUTURE == "04/20/2027") OR
+  (@SHIP_CODE == "EG" AND @DEPARTURE_DATE_FUTURE == "04/20/2026") OR 
+  (@SHIP_CODE == "EG" AND @DEPARTURE_DATE_FUTURE == "09/28/2026") OR 
+  (@SHIP_CODE == "EG" AND @DEPARTURE_DATE_FUTURE == "10/01/2025") OR 
+  (@SHIP_CODE == "SL" AND @DEPARTURE_DATE_FUTURE == "04/09/2027") OR 
+  (@SHIP_CODE == "SL" AND @DEPARTURE_DATE_FUTURE == "04/09/2026") OR 
+  (@SHIP_CODE == "SL" AND @DEPARTURE_DATE_FUTURE == "09/29/2026") OR 
+  (@SHIP_CODE == "SL" AND @DEPARTURE_DATE_FUTURE == "10/02/2025") THEN
+    SET @NUM_OF_NIGHTS = Substring(@ITINERARY_NAME, 0, 2)
+ENDIF
+]%%
+%%[IF NOT EMPTY (@SHIP_CODE) AND NOT EMPTY (@REGION_FUTURE) AND NOT EMPTY (@NUM_OF_NIGHTS) THEN]%%
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" style="margin: 0 auto; background-color: #002859;">
+    <tr>
+        <td style="padding: 24px 24px 8px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                    <!-- Column 1 -->
+                    <td class="responsive-td" valign="top" width="33%" style="padding: 0 8px 16px 0;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <td align="center">
+                                    <a href="%%=RedirectTo(@URL_MANAGERESERVATION)=%%" alias="%%=Iif(Empty(@Manage_Alias), 'RESERVATION_INFO_REGION', @Manage_Alias)=%%" target="_blank" title="View destination">
+                                        <img src="%%=v(@IMG_FUTURE_REGION)=%%" alt="Your Destination" class="manage-reservation-icon" style="display: block; width: 100%; height: auto; border-radius: 12px;">
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="font-family: 'Poppins', Arial, sans-serif; font-size: 16px; line-height: 22px; color: #ffffff; padding: 8px 0 0 0; text-transform: uppercase; font-weight: 600;">
+                                    <span style="color:#ffffff !important; font-weight: 600; text-transform: uppercase; text-wrap: nowrap;">
+                                        %%[IF @REGION_FUTURE == "Australia/New Zealand" THEN]%%
+                                        AUSTRALIA/NEW<br>ZEALAND
+                                        %%[ELSE]%%
+                                        %%=v(@REGION_FUTURE)=%%
+                                        %%[ENDIF]%%
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+
+                    <!-- Column 2 -->
+                    <td class="responsive-td" valign="top" width="33%" style="padding: 0 8px 16px 8px;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <td align="center">
+                                    <a href="%%=RedirectTo(@URL_MANAGERESERVATION)=%%" alias="%%=Iif(Empty(@Manage_Alias), 'RESERVATION_INFO_NIGHTS', @Manage_Alias)=%%" target="_blank" title="View itinerary details">
+                                        <img src="%%=v(@IMG_FUTURE_NIGHTS)=%%" alt="Luxurious nights" class="manage-reservation-icon" style="display: block; width: 100%; height: auto; border-radius: 12px;">
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="font-family: 'Poppins', Arial, sans-serif; font-size: 16px; line-height: 22px; color: #ffffff; padding: 8px 0 0 0; font-weight: 600;"><span style="color:#ffffff !important; font-weight: 600;">%%=v(@NUM_OF_NIGHTS)=%% LUXURIOUS<br>NIGHTS</span></td>
+                            </tr>
+                        </table>
+                    </td>
+
+                    <!-- Column 3 -->
+                    <td class="responsive-td" valign="top" width="33%" style="padding: 0 0 16px 8px;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <td align="center">
+                                    <a href="%%=RedirectTo(@URL_MANAGERESERVATION)=%%" alias="RESERVATION_INFO_SHIP" target="_blank" title="View ship details">
+                                        <img src="%%=v(@IMG_FUTURE_SHIP)=%%" alt="Your Ship" class="manage-reservation-icon" style="display: block; width: 100%; height: auto; border-radius: 12px;">
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="font-family: 'Poppins', Arial, sans-serif; font-size: 16px; line-height: 22px; color: #ffffff; padding: 8px 0 0 0; text-transform: uppercase; font-weight: 600;"><span style="color:#ffffff !important; font-weight: 600; text-transform: uppercase;">%%=v(@FutureShipName)=%%</span></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <!-- Copy row -->
+    <tr>
+        <td class="mobile-padding-0-20" style="padding: 0 24px 16px; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 22px; color: #ffffff; text-align: center;">
+            We look forward to seeing you on board %%=v(@FutureShipName)=%% on %%=v(@SailingDate)=%% for your %%=ProperCase(@ITINERARY_NAME)=%%.
+        </td>
+    </tr>
+
+    <!-- CTA row -->
+    <tr>
+        <td style="padding: 24px 24px;" align="center">
+            <table role="presentation" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="center" bgcolor="#E87434" style="border-radius: 10px; background-color: #E87434;">
+                        <a target="_blank" class="buttonstyles" href="%%=RedirectTo(@URL_MANAGERESERVATION)=%%" alias="RESERVATION_INFO_CTA" title="Manage your reservation" style="background: #E87434; border: 1px solid #E87434; padding: 10px 18px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 16px; line-height: 1.1; font-weight: 700; text-align: center; text-decoration: none; display: block; border-radius: 10px;">
+                            MANAGE YOUR RESERVATION
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+%%[ENDIF]%%
+
+%%[IF DateDiff(Now(), @DEPARTURE_DATE_FUTURE, 'D') < 100 THEN ]%%
+<table style="border-collapse:collapse; background-color:#e87536 !important;" class="container" width="600" cellspacing="0" cellpadding="0" border="0" align="center">
+    <tr>
+        <td>
+            <!-- Start RealTime Email Embed - Patents Pending -->
+            <img src="https://em.realtime.email/service/rte?kind=countdown&id=1657940939&esp_uid=%%SubscriberID%%&esp_timerexpirationdate=%%=v(@TimerDate)=%%&dim1=%%CNTRY%%&dim2=%%CNTRY_DIV%%&dim3=%%CITY%%&dim4=%%POSTL_AREA%%" alt="Time left until you sail" style="width:100%; max-width: 600px; height: auto; border:none !important; display: block" width="600">
+            <!-- End RealTime Email Embed - Patents Pending -->
+        </td>
+    </tr>
+</table>
+%%[ENDIF]%%
+<!-- ====== END MANAGE RESERVATION COMPONENT ====== -->

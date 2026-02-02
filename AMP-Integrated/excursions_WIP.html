@@ -1,0 +1,405 @@
+<!--
+
+-->
+%%[
+/* ===== BASIC LOOP ===== */
+SET @rows = LookupOrderedRows('SHOREX_Excursions_Lookup', 0, 'ITINERARY_DAY_NBR ASC',  'SHIP_CODE', @SHIP_CODE, 'SAIL_DATE', @SHIP_DEPARTURE_DATE, 'CONSUMER_ID', @CONSUMER_ID)
+SET @rowCount = RowCount(@rows)
+]%%
+
+<!-- Title -->
+<table cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" role="presentation" style="margin: 0 auto;">
+    <tr>
+        <td class="mobile-padding-0-40" align="center" style="padding: 30px 24px 10px;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
+                <tr>
+                    <td align="left" style="font-family: 'Poppins', Arial, sans-serif; font-size: 25px; line-height: 32px; color: #0f0f10; padding: 0 0 24px 0; font-weight: 700;">Your Shore Excursions Checklist</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+%%[
+/* ===== 2-COLUMN LAYOUT ===== */
+/* Check if we have any excursion data to display */
+IF @rowCount > 0 THEN
+    
+	/* Loop through possible pairs (guarded by @currentIndex) */
+	FOR @pairLoop = 1 TO @rowCount DO
+		/* Derive left index as 1,3,5... */
+		SET @currentIndex = Add(Multiply(Subtract(@pairLoop, 1), 2), 1)
+		IF @currentIndex <= @rowCount THEN
+        
+        /* ========== LEFT COLUMN (ALWAYS EXISTS) ========== */
+        SET @leftRow = Row(@rows, @currentIndex)
+        SET @LEFT_ACTIVE_EXCURSIONS = Field(@leftRow, 'ACTIVE_EXCURSIONS')
+        SET @LEFT_SHIP_CODE = Field(@leftRow, 'SHIP_CODE')
+        SET @LEFT_SAIL_DATE = Field(@leftRow, 'SAIL_DATE')
+        SET @LEFT_ITINERARY_DAY_NBR = Field(@leftRow, 'ITINERARY_DAY_NBR')
+        
+        /* Get and clean left port name */
+        SET @LEFT_PORT_NAME = Field(@leftRow, 'PORT_NAME')
+        IF indexOf(@LEFT_PORT_NAME, ",") > 0 THEN
+            SET @LEFT_PORT_NAME = Substring(@LEFT_PORT_NAME, 1, Subtract(IndexOf(@LEFT_PORT_NAME, ","), 1))
+        ENDIF
+        
+        /* Extract additional left fields */
+        SET @LEFT_PORT_CODE = Field(@leftRow, 'PORT_CODE')
+        SET @LEFT_ONBOARD_CREDIT = Field(@leftRow, 'ONBOARD_CREDIT')
+        SET @LEFT_CC_LOYALTY_ACCOUNT_NBR = Field(@leftRow, 'CC_LOYALTY_ACCOUNT_NBR')
+        SET @LEFT_RDSS_VERSION = Field(@leftRow, 'RDSS_VERSION')
+        
+        /* Calculate left day date */
+        SET @LEFT_CURRENT_DAY_DATE = DateAdd(@LEFT_SAIL_DATE, Subtract(@LEFT_ITINERARY_DAY_NBR, 1), 'D')
+        
+        /* Check if left day has excursions booked */
+        SET @LEFT_HAS_EXCURSIONS = IIF(NOT EMPTY(@LEFT_ACTIVE_EXCURSIONS), "TRUE", "FALSE")
+        
+        /* ========== RIGHT COLUMN (MAY NOT EXIST) ========== */
+        SET @rightIndex = Add(@currentIndex, 1)
+        
+        /* Check if right column day exists */
+        IF @rightIndex <= @rowCount THEN
+            SET @rightRow = Row(@rows, @rightIndex)
+            SET @RIGHT_ACTIVE_EXCURSIONS = Field(@rightRow, 'ACTIVE_EXCURSIONS')
+            SET @RIGHT_SHIP_CODE = Field(@rightRow, 'SHIP_CODE')
+            SET @RIGHT_SAIL_DATE = Field(@rightRow, 'SAIL_DATE')
+            SET @RIGHT_ITINERARY_DAY_NBR = Field(@rightRow, 'ITINERARY_DAY_NBR')
+            
+            /* Get and clean right port name */
+            SET @RIGHT_PORT_NAME = Field(@rightRow, 'PORT_NAME')
+            IF indexOf(@RIGHT_PORT_NAME, ",") > 0 THEN
+                SET @RIGHT_PORT_NAME = Substring(@RIGHT_PORT_NAME, 1, Subtract(IndexOf(@RIGHT_PORT_NAME, ","), 1))
+            ENDIF
+            
+            /* Extract additional right fields */
+            SET @RIGHT_PORT_CODE = Field(@rightRow, 'PORT_CODE')
+            SET @RIGHT_ONBOARD_CREDIT = Field(@rightRow, 'ONBOARD_CREDIT')
+            SET @RIGHT_CC_LOYALTY_ACCOUNT_NBR = Field(@rightRow, 'CC_LOYALTY_ACCOUNT_NBR')
+            SET @RIGHT_RDSS_VERSION = Field(@rightRow, 'RDSS_VERSION')
+            
+            /* Calculate right day date */
+            SET @RIGHT_CURRENT_DAY_DATE = DateAdd(@RIGHT_SAIL_DATE, Subtract(@RIGHT_ITINERARY_DAY_NBR, 1), 'D')
+            
+            /* Check if right day has excursions booked */
+            SET @RIGHT_HAS_EXCURSIONS = IIF(NOT EMPTY(@RIGHT_ACTIVE_EXCURSIONS), "TRUE", "FALSE")
+            
+            SET @HAS_RIGHT_DAY = "TRUE"
+        ELSE
+            /* Right column is empty - set default values */
+            SET @HAS_RIGHT_DAY = "FALSE"
+            SET @RIGHT_ITINERARY_DAY_NBR = ""
+            SET @RIGHT_PORT_NAME = ""
+            SET @RIGHT_HAS_EXCURSIONS = "FALSE"
+		ENDIF
+]%%
+
+<!-- CONDITIONAL LAYOUT - PAIR vs FINAL ODD DAY -->
+%%[ IF @HAS_RIGHT_DAY == "TRUE" THEN ]%%
+
+<!-- ========== PAIR LAYOUT: Two-column (Days 1-2, 3-4, etc.) ========== -->
+<table cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" role="presentation" style="margin: 0 auto;">
+	<tr>
+		<td align="center" style="padding: 0 24px 20px;">
+			<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
+				<tr>
+					<!-- LEFT COLUMN -->
+					<td class="responsive-td" valign="top" width="50%" style="padding: 0 12px 0 0;">
+						<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
+							<!-- Day Header -->
+							<tr>
+								<td class="mobile-padding-0-20" align="left" style="font-family: 'Poppins', Arial, sans-serif; font-size: 18px; font-weight: 700; line-height: 28px; color: #0f0f10; padding: 0 0 12px 0;">
+									DAY %%=v(@LEFT_ITINERARY_DAY_NBR)=%%: %%=FormatDate(@LEFT_CURRENT_DAY_DATE, 'M')=%%
+								</td>
+							</tr>
+							
+							<!-- Excursion Image -->
+							<tr%%[ IF @LEFT_HAS_EXCURSIONS == "TRUE" THEN ]%% class="hide-booked-image-mobile"%%[ ENDIF ]%%>
+								<td class="mobile-padding-0-20">
+									<img src="https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/55d45737-5ac2-475f-a397-e81e1f729d25.png" width="100%" alt="Destination image" style="display: block; width: 100%; height: auto;">
+								</td>
+							</tr>
+							
+							<!-- Port Name -->
+							<tr>
+								<td class="mobile-padding-0-20" align="left" style="font-family: 'Poppins', Arial, sans-serif; font-size: 18px; line-height: 26px; color: #0f0f10; padding: 16px 0 8px 0;">
+									%%=UpperCase(@LEFT_PORT_NAME)=%%
+								</td>
+							</tr>
+							
+							%%[ IF @LEFT_HAS_EXCURSIONS == "TRUE" THEN ]%%
+							<!-- BOOKED STATE: Dark background with checkmark -->
+							<tr>
+								<td class="mobile-padding-0-20" style="padding: 4px 0 0 0;">
+									<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation" style="background-color: #081632; border-radius: 10px;">
+										<tr>
+											<td align="left" width="24" style="padding: 8px 0 8px 16px;">
+												<table cellpadding="0" cellspacing="0" border="0" role="presentation">
+													<tr>
+														<td align="center" width="23" height="23" style="background-color: #e8ecf5; color: #e87435; font-family: 'Poppins', Arial, sans-serif; font-size: 16px; line-height: 18px; border-radius: 50%;">&#10003;</td>
+													</tr>
+												</table>
+											</td>
+											<td align="left" style="font-family: 'Poppins', Arial, sans-serif; font-size: 18px; line-height: 24px; font-weight: 500; color: #ffffff; padding: 8px 0 8px 8px;">Excursions booked</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							%%[ ELSE ]%%
+							<!-- NOT BOOKED STATE: Gray background with empty circle -->
+							<tr>
+								<td class="mobile-padding-0-20" style="padding: 4px 0 12px 0;">
+									<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation" style="background-color: #d6d6d6; border-radius: 10px;">
+										<tr>
+											<td align="left" width="24" style="padding: 8px 0 8px 16px;">
+												<table cellpadding="0" cellspacing="0" border="0" role="presentation">
+													<tr>
+														<td align="center" width="23" height="23" style="background-color: #f2f2f2; color: #b5b5b5; font-family: 'Poppins', Arial, sans-serif; font-size: 16px; line-height: 18px; border-radius: 50%;"></td>
+													</tr>
+												</table>
+											</td>
+											<td align="left" style="font-family: 'Poppins', Arial, sans-serif; font-size: 18px; line-height: 24px; font-weight: 500; color: #1d1d1f; padding: 8px 0 8px 8px;">No excursions booked</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<!-- Book Now Button -->
+							<tr>
+								<td align="left" class="mobile-padding-0-20" style="padding: 4px 0 0 0;">
+									<table border="0" cellspacing="0" cellpadding="0" role="presentation" width="100%">
+										<tr>
+											<td class="button-cell" bgcolor="#e87435" style="border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; background-color: #e87435;">
+												<a target="_blank" class="buttonstyles" href="https://click.na.celebritycruises.com/?qs=1eca359fc3d421114376de507176ba6cc700ad6b81d049c1210bfc7f7226ad1b317c4ba313330d968acfcf45b5c9bcb8696a56d24311a3c3e0e288bd5da89eb2" title="BOOK NOW" style="background: #e87435; border: 1px solid #e87435; padding: 8px 20px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">BOOK NOW</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							%%[ ENDIF ]%%
+						</table>
+					</td>
+					
+					<!-- RIGHT COLUMN -->
+					<td class="responsive-td" valign="top" width="50%" style="padding: 0 0 0 12px;">
+						<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
+							<!-- Day Header -->
+							<tr>
+								<td class="mobile-padding-0-20" align="left" style="font-family: 'Poppins', Arial, sans-serif; font-size: 18px; font-weight: 700; line-height: 28px; color: #0f0f10; padding: 0 0 12px 0;">
+									DAY %%=v(@RIGHT_ITINERARY_DAY_NBR)=%%: %%=FormatDate(@RIGHT_CURRENT_DAY_DATE, 'M')=%%
+								</td>
+							</tr>
+							
+							<!-- Excursion Image -->
+							<tr%%[ IF @RIGHT_HAS_EXCURSIONS == "TRUE" THEN ]%% class="hide-booked-image-mobile"%%[ ENDIF ]%%>
+								<td class="mobile-padding-0-20">
+									<img src="https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/55d45737-5ac2-475f-a397-e81e1f729d25.png" width="100%" alt="Destination image" style="display: block; width: 100%; height: auto;">
+								</td>
+							</tr>
+							
+							<!-- Port Name -->
+							<tr>
+								<td class="mobile-padding-0-20" align="left" style="font-family: 'Poppins', Arial, sans-serif; font-size: 18px; line-height: 26px; color: #0f0f10; padding: 16px 0 8px 0;">
+									%%=UpperCase(@RIGHT_PORT_NAME)=%%
+								</td>
+							</tr>
+							
+							%%[ IF @RIGHT_HAS_EXCURSIONS == "TRUE" THEN ]%%
+							<!-- BOOKED STATE: Dark background with checkmark -->
+							<tr>
+								<td class="mobile-padding-0-20" style="padding: 4px 0 0 0;">
+									<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation" style="background-color: #081632; border-radius: 10px;">
+										<tr>
+											<td align="left" width="24" style="padding: 8px 0 8px 16px;">
+												<table cellpadding="0" cellspacing="0" border="0" role="presentation">
+													<tr>
+														<td align="center" width="23" height="23" style="background-color: #e8ecf5; color: #e87435; font-family: 'Poppins', Arial, sans-serif; font-size: 16px; line-height: 18px; border-radius: 50%;">&#10003;</td>
+													</tr>
+												</table>
+											</td>
+											<td align="left" style="font-family: 'Poppins', Arial, sans-serif; font-size: 18px; line-height: 24px; font-weight: 500; color: #ffffff; padding: 8px 0 8px 8px;">Excursions booked</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							%%[ ELSE ]%%
+							<!-- NOT BOOKED STATE: Gray background with empty circle -->
+							<tr>
+								<td class="mobile-padding-0-20" style="padding: 4px 0 12px 0;">
+									<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation" style="background-color: #d6d6d6; border-radius: 10px;">
+										<tr>
+											<td align="left" width="24" style="padding: 8px 0 8px 16px;">
+												<table cellpadding="0" cellspacing="0" border="0" role="presentation">
+													<tr>
+														<td align="center" width="23" height="23" style="background-color: #f2f2f2; color: #b5b5b5; font-family: 'Poppins', Arial, sans-serif; font-size: 16px; line-height: 18px; border-radius: 50%;"></td>
+													</tr>
+												</table>
+											</td>
+											<td align="left" style="font-family: 'Poppins', Arial, sans-serif; font-size: 18px; line-height: 24px; font-weight: 500; color: #1d1d1f; padding: 8px 0 8px 8px;">No excursions booked</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<!-- Book Now Button -->
+							<tr>
+								<td align="left" class="mobile-padding-0-20" style="padding: 4px 0 0 0;">
+									<table border="0" cellspacing="0" cellpadding="0" role="presentation" width="100%">
+										<tr>
+											<td class="button-cell" bgcolor="#e87435" style="border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; background-color: #e87435;">
+												<a target="_blank" class="buttonstyles" href="https://click.na.celebritycruises.com/?qs=1eca359fc3d421114376de507176ba6cc700ad6b81d049c1210bfc7f7226ad1b317c4ba313330d968acfcf45b5c9bcb8696a56d24311a3c3e0e288bd5da89eb2" title="BOOK NOW" style="background: #e87435; border: 1px solid #e87435; padding: 8px 20px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">BOOK NOW</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							%%[ ENDIF ]%%
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+%%[ ELSE ]%%
+
+<!-- ========== FINAL ODD DAY LAYOUT: Image left (50%), Content right (50%) ========== -->
+<table cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" role="presentation" style="margin: 0 auto;">
+	<tr>
+		<td align="center" style="padding: 0 24px 20px;">
+			<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
+				<tr>
+					<!-- IMAGE COLUMN (LEFT) -->
+					<td class="responsive-td" valign="top" width="50%" style="padding: 0 12px 0 0;">
+						<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
+							<tr%%[ IF @LEFT_HAS_EXCURSIONS == "TRUE" THEN ]%% class="hide-booked-image-mobile"%%[ ENDIF ]%%>
+								<td class="mobile-padding-0-20">
+									<img src="https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/55d45737-5ac2-475f-a397-e81e1f729d25.png" width="100%" alt="Destination image" style="display: block; width: 100%; height: auto;">
+								</td>
+							</tr>
+						</table>
+					</td>
+					
+					<!-- CONTENT COLUMN (RIGHT) -->
+					<td class="responsive-td" valign="top" width="50%" style="padding: 0 0 0 12px;">
+						<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
+							<!-- Day Header -->
+							<tr>
+								<td class="mobile-padding-0-20" align="left" style="font-family: 'Poppins', Arial, sans-serif; font-size: 18px; font-weight: 700; line-height: 28px; color: #0f0f10; padding: 0 0 12px 0;">
+									DAY %%=v(@LEFT_ITINERARY_DAY_NBR)=%%: %%=FormatDate(@LEFT_CURRENT_DAY_DATE, 'M')=%%
+								</td>
+							</tr>
+							
+							<!-- Port Name -->
+							<tr>
+								<td class="mobile-padding-0-20" align="left" style="font-family: 'Poppins', Arial, sans-serif; font-size: 18px; line-height: 26px; color: #0f0f10; padding: 0 0 12px 0;">
+									%%=UpperCase(@LEFT_PORT_NAME)=%%
+								</td>
+							</tr>
+							
+							%%[ IF @LEFT_HAS_EXCURSIONS == "TRUE" THEN ]%%
+							<!-- BOOKED STATE: Dark background with checkmark -->
+							<tr>
+								<td class="mobile-padding-0-20" style="padding: 4px 0 0 0;">
+									<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation" style="background-color: #081632; border-radius: 10px;">
+										<tr>
+											<td align="left" width="24" style="padding: 8px 0 8px 16px;">
+												<table cellpadding="0" cellspacing="0" border="0" role="presentation">
+													<tr>
+														<td align="center" width="23" height="23" style="background-color: #e8ecf5; color: #e87435; font-family: 'Poppins', Arial, sans-serif; font-size: 16px; line-height: 18px; border-radius: 50%;">&#10003;</td>
+													</tr>
+												</table>
+											</td>
+											<td align="left" style="font-family: 'Poppins', Arial, sans-serif; font-size: 18px; line-height: 24px; font-weight: 500; color: #ffffff; padding: 8px 0 8px 8px;">Excursions booked</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							%%[ ELSE ]%%
+							<!-- NOT BOOKED STATE: Gray background with empty circle -->
+							<tr>
+								<td class="mobile-padding-0-20" style="padding: 4px 0 12px 0;">
+									<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation" style="background-color: #d6d6d6; border-radius: 10px;">
+										<tr>
+											<td align="left" width="24" style="padding: 8px 0 8px 16px;">
+												<table cellpadding="0" cellspacing="0" border="0" role="presentation">
+													<tr>
+														<td align="center" width="23" height="23" style="background-color: #f2f2f2; color: #b5b5b5; font-family: 'Poppins', Arial, sans-serif; font-size: 16px; line-height: 18px; border-radius: 50%;"></td>
+													</tr>
+												</table>
+											</td>
+											<td align="left" style="font-family: 'Poppins', Arial, sans-serif; font-size: 18px; line-height: 24px; font-weight: 500; color: #1d1d1f; padding: 8px 0 8px 8px;">No excursions booked</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<!-- Book Now Button -->
+							<tr>
+								<td align="left" class="mobile-padding-0-20" style="padding: 4px 0 0 0;">
+									<table border="0" cellspacing="0" cellpadding="0" role="presentation" width="100%">
+										<tr>
+											<td class="button-cell" bgcolor="#e87435" style="border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; background-color: #e87435;">
+												<a target="_blank" class="buttonstyles" href="https://click.na.celebritycruises.com/?qs=1eca359fc3d421114376de507176ba6cc700ad6b81d049c1210bfc7f7226ad1b317c4ba313330d968acfcf45b5c9bcb8696a56d24311a3c3e0e288bd5da89eb2" title="BOOK NOW" style="background: #e87435; border: 1px solid #e87435; padding: 8px 20px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">BOOK NOW</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							%%[ ENDIF ]%%
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+%%[ ENDIF ]%%
+<!-- LAYOUT CONDITIONAL COMPLETE -->
+
+%%[ IF @HAS_RIGHT_DAY == "TRUE" THEN ]%%
+<!-- Divider line between row pairs -->
+<table cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" role="presentation" style="margin: 0 auto;">
+    <tr>
+        <td class="mobile-padding-0-40" align="center" style="padding: 10px 24px 20px;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
+                <tr>
+					<td align="center">
+						<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
+							<tr>
+								<td style="border-bottom: 1px solid #d6d6d6; height: 0;"></td>
+							</tr>
+						</table>
+					</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+%%[ ENDIF ]%%
+
+%%[
+    /* ===== END OF PAIRED DAY RENDERING ===== */
+    /* Close guarded render and move to next pair */
+	ENDIF
+	NEXT @pairLoop
+    
+ENDIF /* End of @rowCount check */
+]%%
+
+<!-- LOOP COMPLETE -->
+
+<table cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" role="presentation" style="margin: 0 auto;">
+    <tr>
+        <td class="mobile-padding-0-40" align="center" style="padding: 10px 24px 20px;">
+           	<table border="0" cellspacing="0" cellpadding="0" role="presentation" width="100%">
+										<tr>
+											<td width="100%" class="button-cell-full" bgcolor="#e87435" style="border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; background-color: #e87435;text-align: center;">
+												<a target="_blank" class="buttonstyles" href="https://click.na.celebritycruises.com/?qs=1eca359fc3d421114376de507176ba6cc700ad6b81d049c1210bfc7f7226ad1b317c4ba313330d968acfcf45b5c9bcb8696a56d24311a3c3e0e288bd5da89eb2" title="SEE ALL EXCURSIONS" style="background: #e87435; border: 1px solid #e87435; padding: 8px 26px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">SEE ALL EXCURSIONS</a>
+											</td>
+										</tr>
+									</table>
+        </td>
+    </tr>
+</table>
+
