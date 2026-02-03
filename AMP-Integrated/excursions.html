@@ -50,6 +50,17 @@ IF @rowCount > 0 THEN
                 SET @LEFT_ITINERARY_DAY_NBR = Field(@currentRow, 'ITINERARY_DAY_NBR')
                 SET @LEFT_PORT_NAME = @CURRENT_PORT_NAME
                 SET @LEFT_PORT_CODE = Field(@currentRow, 'PORT_CODE')
+				/* Lookup image using shipCode + sailDate + day for contextual matching */
+				/* NOTE: If day data is missing for some sailings, consider switching to a different DE keyed by port/itinerary. */
+                SET @LEFT_imageRows = LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @LEFT_SHIP_CODE, 'sailDate', @LEFT_SAIL_DATE, 'day', @LEFT_ITINERARY_DAY_NBR)
+                SET @LEFT_imageRowCount = RowCount(@LEFT_imageRows)
+                SET @LEFT_PORT_IMAGE = ""
+                IF @LEFT_imageRowCount > 0 THEN
+                    SET @LEFT_imgRow = Row(@LEFT_imageRows, 1)
+                    SET @LEFT_PORT_IMAGE = Field(@LEFT_imgRow, 'path')
+                ELSE
+                    SET @LEFT_PORT_IMAGE = "https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/55d45737-5ac2-475f-a397-e81e1f729d25.png"
+                ENDIF
                 SET @LEFT_ONBOARD_CREDIT = Field(@currentRow, 'ONBOARD_CREDIT')
                 SET @LEFT_CC_LOYALTY_ACCOUNT_NBR = Field(@currentRow, 'CC_LOYALTY_ACCOUNT_NBR')
                 SET @LEFT_RDSS_VERSION = Field(@currentRow, 'RDSS_VERSION')
@@ -63,6 +74,17 @@ IF @rowCount > 0 THEN
                 SET @RIGHT_ITINERARY_DAY_NBR = Field(@currentRow, 'ITINERARY_DAY_NBR')
                 SET @RIGHT_PORT_NAME = @CURRENT_PORT_NAME
                 SET @RIGHT_PORT_CODE = Field(@currentRow, 'PORT_CODE')
+				/* Lookup image using shipCode + sailDate + day for contextual matching */
+				/* NOTE: If day data is missing for some sailings, might need switching to a different DE keyed by port/itinerary. */
+                SET @RIGHT_imageRows = LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @RIGHT_SHIP_CODE, 'sailDate', @RIGHT_SAIL_DATE, 'day', @RIGHT_ITINERARY_DAY_NBR)
+                SET @RIGHT_imageRowCount = RowCount(@RIGHT_imageRows)
+                SET @RIGHT_PORT_IMAGE = ""
+                IF @RIGHT_imageRowCount > 0 THEN
+                    SET @RIGHT_imgRow = Row(@RIGHT_imageRows, 1)
+                    SET @RIGHT_PORT_IMAGE = Field(@RIGHT_imgRow, 'path')
+                ELSE
+                    SET @RIGHT_PORT_IMAGE = "https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/55d45737-5ac2-475f-a397-e81e1f729d25.png"
+                ENDIF
                 SET @RIGHT_ONBOARD_CREDIT = Field(@currentRow, 'ONBOARD_CREDIT')
                 SET @RIGHT_CC_LOYALTY_ACCOUNT_NBR = Field(@currentRow, 'CC_LOYALTY_ACCOUNT_NBR')
                 SET @RIGHT_RDSS_VERSION = Field(@currentRow, 'RDSS_VERSION')
@@ -92,7 +114,7 @@ IF @rowCount > 0 THEN
 							<!-- Excursion Image -->
 							<tr%%[ IF @LEFT_HAS_EXCURSIONS == "TRUE" THEN ]%% class="hide-booked-image-mobile"%%[ ENDIF ]%%>
 								<td class="mobile-padding-0-20">
-									<img src="https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/55d45737-5ac2-475f-a397-e81e1f729d25.png" width="100%" alt="Destination image" style="display: block; width: 100%; height: auto;">
+									<img src="%%=v(@LEFT_PORT_IMAGE)=%%" width="100%" alt="Destination image" style="display: block; width: 100%; height: auto;">
 								</td>
 							</tr>
 							
@@ -145,7 +167,7 @@ IF @rowCount > 0 THEN
 									<table border="0" cellspacing="0" cellpadding="0" role="presentation" width="100%">
 										<tr>
 											<td class="button-cell" bgcolor="#e87435" style="border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; background-color: #e87435;">
-												<a target="_blank" class="buttonstyles" href="https://click.na.celebritycruises.com/?qs=1eca359fc3d421114376de507176ba6cc700ad6b81d049c1210bfc7f7226ad1b317c4ba313330d968acfcf45b5c9bcb8696a56d24311a3c3e0e288bd5da89eb2" title="BOOK NOW" style="background: #e87435; border: 1px solid #e87435; padding: 8px 20px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">BOOK NOW</a>
+												<a target="_blank" class="buttonstyles" href="%%=RedirectTo(@MCC_link)=%%" title="BOOK NOW" style="background: #e87435; border: 1px solid #e87435; padding: 8px 20px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">BOOK NOW</a>
 											</td>
 										</tr>
 									</table>
@@ -168,7 +190,7 @@ IF @rowCount > 0 THEN
 							<!-- Excursion Image -->
 							<tr%%[ IF @RIGHT_HAS_EXCURSIONS == "TRUE" THEN ]%% class="hide-booked-image-mobile"%%[ ENDIF ]%%>
 								<td class="mobile-padding-0-20">
-									<img src="https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/55d45737-5ac2-475f-a397-e81e1f729d25.png" width="100%" alt="Destination image" style="display: block; width: 100%; height: auto;">
+									<img src="%%=v(@RIGHT_PORT_IMAGE)=%%" width="100%" alt="Destination image" style="display: block; width: 100%; height: auto;">
 								</td>
 							</tr>
 							
@@ -221,7 +243,7 @@ IF @rowCount > 0 THEN
 									<table border="0" cellspacing="0" cellpadding="0" role="presentation" width="100%">
 										<tr>
 											<td class="button-cell" bgcolor="#e87435" style="border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; background-color: #e87435;">
-												<a target="_blank" class="buttonstyles" href="https://click.na.celebritycruises.com/?qs=1eca359fc3d421114376de507176ba6cc700ad6b81d049c1210bfc7f7226ad1b317c4ba313330d968acfcf45b5c9bcb8696a56d24311a3c3e0e288bd5da89eb2" title="BOOK NOW" style="background: #e87435; border: 1px solid #e87435; padding: 8px 20px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">BOOK NOW</a>
+												<a target="_blank" class="buttonstyles" href="%%=RedirectTo(@MCC_link)=%%" title="BOOK NOW" style="background: #e87435; border: 1px solid #e87435; padding: 8px 20px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">BOOK NOW</a>
 											</td>
 										</tr>
 									</table>
@@ -260,7 +282,7 @@ ENDIF
 						<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
 							<tr%%[ IF @LEFT_HAS_EXCURSIONS == "TRUE" THEN ]%% class="hide-booked-image-mobile"%%[ ENDIF ]%%>
 								<td class="mobile-padding-0-20">
-									<img src="https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/55d45737-5ac2-475f-a397-e81e1f729d25.png" width="100%" alt="Destination image" style="display: block; width: 100%; height: auto;">
+									<img src="%%=v(@LEFT_PORT_IMAGE)=%%" width="100%" alt="Destination image" style="display: block; width: 100%; height: auto;">
 								</td>
 							</tr>
 						</table>
@@ -325,7 +347,7 @@ ENDIF
 									<table border="0" cellspacing="0" cellpadding="0" role="presentation" width="100%">
 										<tr>
 											<td class="button-cell" bgcolor="#e87435" style="border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; background-color: #e87435;">
-												<a target="_blank" class="buttonstyles" href="https://click.na.celebritycruises.com/?qs=1eca359fc3d421114376de507176ba6cc700ad6b81d049c1210bfc7f7226ad1b317c4ba313330d968acfcf45b5c9bcb8696a56d24311a3c3e0e288bd5da89eb2" title="BOOK NOW" style="background: #e87435; border: 1px solid #e87435; padding: 8px 20px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">BOOK NOW</a>
+												<a target="_blank" class="buttonstyles" href="%%=RedirectTo(@MCC_link)=%%" title="BOOK NOW" style="background: #e87435; border: 1px solid #e87435; padding: 8px 20px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">BOOK NOW</a>
 											</td>
 										</tr>
 									</table>
@@ -351,7 +373,7 @@ ENDIF
            	<table border="0" cellspacing="0" cellpadding="0" role="presentation" width="100%">
 										<tr>
 											<td width="100%" class="button-cell-full" bgcolor="#e87435" style="border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; background-color: #e87435;text-align: center;">
-												<a target="_blank" class="buttonstyles" href="https://click.na.celebritycruises.com/?qs=1eca359fc3d421114376de507176ba6cc700ad6b81d049c1210bfc7f7226ad1b317c4ba313330d968acfcf45b5c9bcb8696a56d24311a3c3e0e288bd5da89eb2" title="SEE ALL EXCURSIONS" style="background: #e87435; border: 1px solid #e87435; padding: 8px 26px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">SEE ALL EXCURSIONS</a>
+												<a target="_blank" class="buttonstyles" href="%%=RedirectTo(@MCC_link)=%%" title="SEE ALL EXCURSIONS" style="background: #e87435; border: 1px solid #e87435; padding: 8px 26px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">SEE ALL EXCURSIONS</a>
 											</td>
 										</tr>
 									</table>
