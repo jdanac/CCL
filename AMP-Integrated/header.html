@@ -1,0 +1,62 @@
+%%[
+/* ===== HEADER VARIABLES ===== */
+
+/* Get Onboard Credit from SHOREX lookup */
+SET @ONBOARD_CREDIT = Lookup('SHOREX_Excursions_Lookup', 'ONBOARD_CREDIT', 'SHIP_CODE', @SHIP_CODE, 'SAIL_DATE', @SHIP_DEPARTURE_DATE, 'CONSUMER_ID', @CONSUMER_ID)
+
+/* Calculate days remaining until sail date */
+SET @CURRENT_DATE = NOW()
+SET @DAYS_UNTIL_SAIL = DateDiff(@CURRENT_DATE, @SHIP_DEPARTURE_DATE, 'D')
+
+/* Determine if sailing is within 45 days */
+SET @WITHIN_45_DAYS = IIF(@DAYS_UNTIL_SAIL <= 45, "TRUE", "FALSE")
+
+/* Check if OBC has value */
+SET @HAS_OBC = IIF(NOT EMPTY(@ONBOARD_CREDIT) AND @ONBOARD_CREDIT > 0, "TRUE", "FALSE")
+
+]%%
+
+<!--AMPscript: incomplete or unclear conditions for all cases -->
+<table class="container" width="600" cellspacing="0" cellpadding="0" border="0" align="center">
+    
+        <tr>
+            <td align="center" style="padding: 0 24px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="center">
+                <tr>
+            %%[ IF @HAS_OBC == "FALSE" AND @WITHIN_45_DAYS == "TRUE" THEN ]%%
+            <td class="textC" style="background:#ffffff; font-weight: 400 !important; font-family:'Poppins',sans-serif; font-size: 15px; line-height: 14px; color: #000000; text-align:right; padding: 10px 10px 20px 0"
+                width="47%" height="30"><a href="#" style="font-weight: 400; color:#000000; text-decoration: none"
+                    target="_blank">Plan Your Cruise</a></td>
+                      <td height="30" width="6%"
+                style="background:#ffffff; font-weight: 400 !important; font-family:'Poppins',sans-serif; font-size: 15px; line-height: 14px; color: #000000; text-align:center;padding:10px 0 20px;">
+                &nbsp;&nbsp;|&nbsp;&nbsp;</td>
+            <td class="textC" style="background:#ffffff; font-weight: 400 !important; font-family:'Poppins',sans-serif; font-size: 15px; line-height: 14px; color: #000000; text-align:left; padding: 10px 0 20px 10px;"
+                width="47%" height="30"><a href="#" style="font-weight: 400; color:#000000; text-decoration: none"
+                    target="_blank">%%=v(@DAYS_UNTIL_SAIL)=%% Days Until You Sail</a></td>
+            %%[ ELSEIF @HAS_OBC == "TRUE" AND @WITHIN_45_DAYS == "TRUE" THEN ]%%
+                    <td class="textC" style="background:#ffffff; font-weight: 400 !important; font-family:'Poppins',sans-serif; font-size: 15px; line-height: 14px; color: #000000; text-align:right; padding: 10px 10px 20px 0"
+                width="47%" height="30">OBC $%%=v(@ONBOARD_CREDIT)=%%</td>
+                  <td height="30" width="6%"
+                style="background:#ffffff; font-weight: 400 !important; font-family:'Poppins',sans-serif; font-size: 15px; line-height: 14px; color: #000000; text-align:center;padding:10px 0 20px;">
+                &nbsp;&nbsp;|&nbsp;&nbsp;</td>
+            <td class="textC" style="background:#ffffff; font-weight: 400 !important; font-family:'Poppins',sans-serif; font-size: 15px; line-height: 14px; color: #000000; text-align:left; padding: 10px 0 20px 10px;"
+                width="47%" height="30"><a href="#" style="font-weight: 400; color:#000000; text-decoration: none"
+                    target="_blank">%%=v(@DAYS_UNTIL_SAIL)=%% Days Until You Sail</a></td>
+            %%[ ELSE ]%%
+             <td class="textC" style="background:#ffffff; font-weight: 400 !important; font-family:'Poppins',sans-serif; font-size: 15px; line-height: 14px; color: #000000; text-align:right; padding: 10px 10px 20px 0"
+                width="47%" height="30"><a href="#" style="font-weight: 400; color:#000000; text-decoration: none"
+                    target="_blank">Plan Your Cruise</a></td>
+                      <td height="30" width="6%"
+                style="background:#ffffff; font-weight: 400 !important; font-family:'Poppins',sans-serif; font-size: 15px; line-height: 14px; color: #000000; text-align:center;padding:10px 0 20px;">
+                &nbsp;&nbsp;|&nbsp;&nbsp;</td>
+            <td class="textC" style="background:#ffffff; font-weight: 400 !important; font-family:'Poppins',sans-serif; font-size: 15px; line-height: 14px; color: #000000; text-align:left; padding: 10px 0 20px 10px;"
+                width="47%" height="30"><a href="#" style="font-weight: 400; color:#000000; text-decoration: none"
+                    target="_blank">View in Browser</a></td>
+            %%[ ENDIF ]%%                    
+          
+        </tr>
+    
+</table>
+</td>
+</tr>
+</table>
