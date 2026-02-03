@@ -33,6 +33,29 @@ These variables **must** be set by `SHOREX_ampscript.html` before this component
 
 ## Component Architecture
 
+### Image Sourcing (Current Implementation)
+
+**Source DE:** `SHOREX_GraphiQL_Products`
+
+**Lookup keys (composite match):**
+- `shipCode` (from `@LEFT_SHIP_CODE` / `@RIGHT_SHIP_CODE`)
+- `sailDate` (from `@LEFT_SAIL_DATE` / `@RIGHT_SAIL_DATE`)
+- `day` (from `@LEFT_ITINERARY_DAY_NBR` / `@RIGHT_ITINERARY_DAY_NBR`)
+
+**Why these keys:**
+- The GraphiQL Products DE is indexed by sailing context. A day value is required to locate the correct image for that specific sailing day.
+- The DE does **not** include `PORT_CODE`, so day is the only contextual disambiguator available alongside ship and sail date.
+
+**Lookup flow (per port day):**
+1. Build a rowset with `LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @SHIP_CODE, 'sailDate', @SAIL_DATE, 'day', @ITINERARY_DAY_NBR)`
+2. If at least one row exists, use the first row’s `path` as the image URL.
+3. If no rows exist, use the fallback image URL.
+
+**Important behavior notes:**
+- If a **sailing/day** does not exist in `SHOREX_GraphiQL_Products`, the fallback image is expected and correct.
+- The lookup is intentionally strict; using a different sail date to “fill in” missing images would produce incorrect imagery for that guest’s itinerary.
+- If business needs require image coverage regardless of day availability, a different DE keyed by **port** or **itinerary** would be required.
+
 ### Loop Logic
 
 #### Pending Day Pairing System
