@@ -176,7 +176,7 @@ a {
     vertical-align: bottom;
   }
   .hero-overlay-padding {
-    padding: 300px 20px 40px !important;
+    padding: 120px 20px 40px !important;
   }
   .textC {
     text-align: center !important;
@@ -240,9 +240,7 @@ a {
   .mobile-hero-overlay-img {
     max-width: 280px !important;
   }
-  .hero-overlay-padding {
-    padding: 300px 24px 40px !important;
-  }
+  
   .manage-reservation-icon {
     max-width: 50% !important;
     width: 50% !important;
