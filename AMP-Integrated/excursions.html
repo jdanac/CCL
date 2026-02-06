@@ -45,16 +45,19 @@ IF @rowCount > 0 THEN
             IF EMPTY(@PENDING_DAY) THEN
                 /* No pending day - save this as LEFT for future pair */
                 SET @PENDING_DAY = "TRUE"
+				
 				/* TEMP: PORTS_SHOREX_DATA_FINAL does not include ACTIVE_EXCURSIONS. */
 				/* REVERT WHEN FIELD IS AVAILABLE: */
 				/* SET @LEFT_ACTIVE_EXCURSIONS = Field(@currentRow, 'ACTIVE_EXCURSIONS') */
 				/* SET @LEFT_HAS_EXCURSIONS = IIF(NOT EMPTY(@LEFT_ACTIVE_EXCURSIONS), "TRUE", "FALSE") */
 				SET @LEFT_ACTIVE_EXCURSIONS = ""
+				
                 SET @LEFT_SHIP_CODE = Field(@currentRow, 'SHIP_CODE')
 				SET @LEFT_SAIL_DATE = Field(@currentRow, 'SHIP_DEPARTURE_DATE')
                 SET @LEFT_ITINERARY_DAY_NBR = Field(@currentRow, 'ITINERARY_DAY_NBR')
                 SET @LEFT_PORT_NAME = @CURRENT_PORT_NAME
 				SET @LEFT_PORT_CODE = Field(@currentRow, 'PORT_OF_CALL')
+
 				/* Lookup image using shipCode + sailDate + day for contextual matching */
 				/* NOTE: If day data is missing for some sailings, consider switching to a different DE keyed by port/itinerary. */
                 SET @LEFT_imageRows = LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @LEFT_SHIP_CODE, 'sailDate', @LEFT_SAIL_DATE, 'day', @LEFT_ITINERARY_DAY_NBR)
@@ -66,18 +69,22 @@ IF @rowCount > 0 THEN
                 ELSE
                     SET @LEFT_PORT_IMAGE = "https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/55d45737-5ac2-475f-a397-e81e1f729d25.png"
                 ENDIF
+
                 /* SET @LEFT_ONBOARD_CREDIT = Field(@currentRow, 'ONBOARD_CREDIT')	 */
                 /* SET @LEFT_CC_LOYALTY_ACCOUNT_NBR = Field(@currentRow, 'CC_LOYALTY_ACCOUNT_NBR') */
                 /* SET @LEFT_RDSS_VERSION = Field(@currentRow, 'RDSS_VERSION') */
+
                 SET @LEFT_CURRENT_DAY_DATE = DateAdd(@LEFT_SAIL_DATE, Subtract(@LEFT_ITINERARY_DAY_NBR, 1), 'D')
 				SET @LEFT_HAS_EXCURSIONS = "FALSE"
             ELSE
                 /* We have a pending day - this becomes RIGHT, render PAIR */
+				
 				/* TEMP: PORTS_SHOREX_DATA_FINAL does not include ACTIVE_EXCURSIONS. */
 				/* REVERT WHEN FIELD IS AVAILABLE: */
 				/* SET @RIGHT_ACTIVE_EXCURSIONS = Field(@currentRow, 'ACTIVE_EXCURSIONS') */
 				/* SET @RIGHT_HAS_EXCURSIONS = IIF(NOT EMPTY(@RIGHT_ACTIVE_EXCURSIONS), "TRUE", "FALSE") */
 				SET @RIGHT_ACTIVE_EXCURSIONS = ""
+
                 SET @RIGHT_SHIP_CODE = Field(@currentRow, 'SHIP_CODE')
 				SET @RIGHT_SAIL_DATE = Field(@currentRow, 'SHIP_DEPARTURE_DATE')
                 SET @RIGHT_ITINERARY_DAY_NBR = Field(@currentRow, 'ITINERARY_DAY_NBR')
@@ -94,9 +101,11 @@ IF @rowCount > 0 THEN
                 ELSE
                     SET @RIGHT_PORT_IMAGE = "https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/55d45737-5ac2-475f-a397-e81e1f729d25.png"
                 ENDIF
-                /* SET @RIGHT_ONBOARD_CREDIT = Field(@currentRow, 'ONBOARD_CREDIT') */
+                
+				/* SET @RIGHT_ONBOARD_CREDIT = Field(@currentRow, 'ONBOARD_CREDIT') */
                 /* SET @RIGHT_CC_LOYALTY_ACCOUNT_NBR = Field(@currentRow, 'CC_LOYALTY_ACCOUNT_NBR') */
                 /* SET @RIGHT_RDSS_VERSION = Field(@currentRow, 'RDSS_VERSION') */
+
                 SET @RIGHT_CURRENT_DAY_DATE = DateAdd(@RIGHT_SAIL_DATE, Subtract(@RIGHT_ITINERARY_DAY_NBR, 1), 'D')
 				SET @RIGHT_HAS_EXCURSIONS = "FALSE"
                 SET @HAS_RIGHT_DAY = "TRUE"
