@@ -20,7 +20,7 @@ SET @rowCount = RowCount(@rows)
 </table>
 
 %%[
-/* ===== 2-COLUMN LAYOUT WITH PENDING DAY APPROACH ===== */
+/* ===== 2-COLUMN LAYOUT WITH PENDING DAY ===== */
 /* Check if we have any excursion data to display */
 IF @rowCount > 0 THEN
     
@@ -46,20 +46,27 @@ IF @rowCount > 0 THEN
                 /* No pending day - save this as LEFT for future pair */
                 SET @PENDING_DAY = "TRUE"
 				
-				/* TEMP: PORTS_SHOREX_DATA_FINAL does not include ACTIVE_EXCURSIONS. */
-				/* REVERT WHEN FIELD IS AVAILABLE: */
-				/* SET @LEFT_ACTIVE_EXCURSIONS = Field(@currentRow, 'ACTIVE_EXCURSIONS') */
-				/* SET @LEFT_HAS_EXCURSIONS = IIF(NOT EMPTY(@LEFT_ACTIVE_EXCURSIONS), "TRUE", "FALSE") */
-				SET @LEFT_ACTIVE_EXCURSIONS = ""
-				
                 SET @LEFT_SHIP_CODE = Field(@currentRow, 'SHIP_CODE')
 				SET @LEFT_SAIL_DATE = Field(@currentRow, 'SHIP_DEPARTURE_DATE')
                 SET @LEFT_ITINERARY_DAY_NBR = Field(@currentRow, 'ITINERARY_DAY_NBR')
                 SET @LEFT_PORT_NAME = @CURRENT_PORT_NAME
 				SET @LEFT_PORT_CODE = Field(@currentRow, 'PORT_OF_CALL')
 
-				/* Lookup image using shipCode + sailDate + day for contextual matching */
-				/* NOTE: If day data is missing for some sailings, consider switching to a different DE keyed by port/itinerary. */
+				/* Lookup ACTIVE EXCURSIONS by consumer + ship + sail date + port code */
+				SET @LEFT_excursionRows = LookupRows('SHOREX_Excursions_Lookup', 'CONSUMER_ID', @CONSUMER_ID, 'SHIP_CODE', @LEFT_SHIP_CODE, 'SAIL_DATE', @LEFT_SAIL_DATE, 'PORT_CODE', @LEFT_PORT_CODE)
+				SET @LEFT_excursionRowCount = RowCount(@LEFT_excursionRows)
+				SET @LEFT_ACTIVE_EXCURSION = ""
+				SET @LEFT_HAS_EXCURSIONS = "FALSE"
+				IF @LEFT_excursionRowCount > 0 THEN
+					SET @LEFT_excursionRow = Row(@LEFT_excursionRows, 1)
+					SET @LEFT_ACTIVE_EXCURSION = Field(@LEFT_excursionRow, 'ACTIVE_EXCURSIONS')
+					IF NOT EMPTY(@LEFT_ACTIVE_EXCURSION) AND @LEFT_ACTIVE_EXCURSION != "FALSE" AND @LEFT_ACTIVE_EXCURSION != "0" THEN
+						SET @LEFT_HAS_EXCURSIONS = "TRUE"
+					ENDIF
+				ENDIF
+
+				/* Lookup image using shipCode + sailDate + day */
+				
                 SET @LEFT_imageRows = LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @LEFT_SHIP_CODE, 'sailDate', @LEFT_SAIL_DATE, 'day', @LEFT_ITINERARY_DAY_NBR)
                 SET @LEFT_imageRowCount = RowCount(@LEFT_imageRows)
                 SET @LEFT_PORT_IMAGE = ""
@@ -74,24 +81,31 @@ IF @rowCount > 0 THEN
                 /* SET @LEFT_CC_LOYALTY_ACCOUNT_NBR = Field(@currentRow, 'CC_LOYALTY_ACCOUNT_NBR') */
                 /* SET @LEFT_RDSS_VERSION = Field(@currentRow, 'RDSS_VERSION') */
 
-                SET @LEFT_CURRENT_DAY_DATE = DateAdd(@LEFT_SAIL_DATE, Subtract(@LEFT_ITINERARY_DAY_NBR, 1), 'D')
-				SET @LEFT_HAS_EXCURSIONS = "FALSE"
+				SET @LEFT_CURRENT_DAY_DATE = DateAdd(@LEFT_SAIL_DATE, Subtract(@LEFT_ITINERARY_DAY_NBR, 1), 'D')
             ELSE
                 /* We have a pending day - this becomes RIGHT, render PAIR */
 				
-				/* TEMP: PORTS_SHOREX_DATA_FINAL does not include ACTIVE_EXCURSIONS. */
-				/* REVERT WHEN FIELD IS AVAILABLE: */
-				/* SET @RIGHT_ACTIVE_EXCURSIONS = Field(@currentRow, 'ACTIVE_EXCURSIONS') */
-				/* SET @RIGHT_HAS_EXCURSIONS = IIF(NOT EMPTY(@RIGHT_ACTIVE_EXCURSIONS), "TRUE", "FALSE") */
-				SET @RIGHT_ACTIVE_EXCURSIONS = ""
-
                 SET @RIGHT_SHIP_CODE = Field(@currentRow, 'SHIP_CODE')
 				SET @RIGHT_SAIL_DATE = Field(@currentRow, 'SHIP_DEPARTURE_DATE')
                 SET @RIGHT_ITINERARY_DAY_NBR = Field(@currentRow, 'ITINERARY_DAY_NBR')
                 SET @RIGHT_PORT_NAME = @CURRENT_PORT_NAME
 				SET @RIGHT_PORT_CODE = Field(@currentRow, 'PORT_OF_CALL')
-				/* Lookup image using shipCode + sailDate + day for contextual matching */
-				/* NOTE: If day data is missing for some sailings, might need switching to a different DE keyed by port/itinerary. */
+
+				/* Lookup ACTIVE EXCURSIONS by consumer + ship + sail date + port code */
+				SET @RIGHT_excursionRows = LookupRows('SHOREX_Excursions_Lookup', 'CONSUMER_ID', @CONSUMER_ID, 'SHIP_CODE', @RIGHT_SHIP_CODE, 'SAIL_DATE', @RIGHT_SAIL_DATE, 'PORT_CODE', @RIGHT_PORT_CODE)
+				SET @RIGHT_excursionRowCount = RowCount(@RIGHT_excursionRows)
+				SET @RIGHT_ACTIVE_EXCURSION = ""
+				SET @RIGHT_HAS_EXCURSIONS = "FALSE"
+				IF @RIGHT_excursionRowCount > 0 THEN
+					SET @RIGHT_excursionRow = Row(@RIGHT_excursionRows, 1)
+					SET @RIGHT_ACTIVE_EXCURSION = Field(@RIGHT_excursionRow, 'ACTIVE_EXCURSIONS')
+					IF NOT EMPTY(@RIGHT_ACTIVE_EXCURSION) AND @RIGHT_ACTIVE_EXCURSION != "FALSE" AND @RIGHT_ACTIVE_EXCURSION != "0" THEN
+						SET @RIGHT_HAS_EXCURSIONS = "TRUE"
+					ENDIF
+				ENDIF
+
+				/* Lookup image using shipCode + sailDate + day */
+				
                 SET @RIGHT_imageRows = LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @RIGHT_SHIP_CODE, 'sailDate', @RIGHT_SAIL_DATE, 'day', @RIGHT_ITINERARY_DAY_NBR)
                 SET @RIGHT_imageRowCount = RowCount(@RIGHT_imageRows)
                 SET @RIGHT_PORT_IMAGE = ""
@@ -106,8 +120,7 @@ IF @rowCount > 0 THEN
                 /* SET @RIGHT_CC_LOYALTY_ACCOUNT_NBR = Field(@currentRow, 'CC_LOYALTY_ACCOUNT_NBR') */
                 /* SET @RIGHT_RDSS_VERSION = Field(@currentRow, 'RDSS_VERSION') */
 
-                SET @RIGHT_CURRENT_DAY_DATE = DateAdd(@RIGHT_SAIL_DATE, Subtract(@RIGHT_ITINERARY_DAY_NBR, 1), 'D')
-				SET @RIGHT_HAS_EXCURSIONS = "FALSE"
+				SET @RIGHT_CURRENT_DAY_DATE = DateAdd(@RIGHT_SAIL_DATE, Subtract(@RIGHT_ITINERARY_DAY_NBR, 1), 'D')
                 SET @HAS_RIGHT_DAY = "TRUE"
 ]%%
 
