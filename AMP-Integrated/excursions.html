@@ -1,9 +1,18 @@
 
 %%[
+/* ===== EXCURSIONS CHECKLIST VARIABLES ===== */
+
+/* Map US_Main_AmpScript variables to SHOREX DE field names */
+SET @CONSUMER_ID = @CNSMR_ID
+SET @SHIP_DEPARTURE_DATE = @DEPARTURE_DATE_FUTURE
+SET @SHOREX_CONSUMER_ID = @CNSMR_ID
+SET @SHOREX_SAIL_DATE = @DEPARTURE_DATE_FUTURE
+SET @SHOREX_SHIP_CODE = @SHIP_CODE
+
 /* ===== BASIC LOOP ===== */
 SET @rows = LookupOrderedRows('ENT.PORTS_SHOREX_DATA_FINAL', 0, 'ITINERARY_DAY_NBR ASC',  'SHIP_CODE', @SHIP_CODE, 'SHIP_DEPARTURE_DATE', @SHIP_DEPARTURE_DATE)
 SET @rowCount = RowCount(@rows)
-
+SET @MCC_link = Concat('https://www.celebritycruises.com/account/cruise-planner/category/shorex?bookingId=', @BOOKING_ID, '&shipCode=', @SHIP_CODE, '&sailDate=', FormatDate(@SHIP_DEPARTURE_DATE, 'YYYYMMdd'), '&currencyCode=', @CURRENCY_CODE)
 ]%%
 
 <!-- Title -->
@@ -13,7 +22,7 @@ SET @rowCount = RowCount(@rows)
             <table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
                 <tr>
                     <td align="left" style="font-family: 'Poppins', Arial, sans-serif; font-size: 25px; line-height: 32px; color: #0f0f10; padding: 0 0 24px 0; font-weight: 700;">Your Shore Excursions Checklist</td>
-                </tr>
+                </tr> 
             </table>
         </td>
     </tr>
@@ -53,7 +62,7 @@ IF @rowCount > 0 THEN
 				SET @LEFT_PORT_CODE = Field(@currentRow, 'PORT_OF_CALL')
 
 				/* Lookup ACTIVE EXCURSIONS by consumer + ship + sail date + port code */
-				SET @LEFT_excursionRows = LookupRows('SHOREX_Excursions_Lookup', 'CONSUMER_ID', @CONSUMER_ID, 'SHIP_CODE', @LEFT_SHIP_CODE, 'SAIL_DATE', @LEFT_SAIL_DATE, 'PORT_CODE', @LEFT_PORT_CODE)
+				SET @LEFT_excursionRows = LookupRows('SHOREX_Excursions_Lookup', 'CONSUMER_ID', @SHOREX_CONSUMER_ID, 'SHIP_CODE', @LEFT_SHIP_CODE, 'SAIL_DATE', @LEFT_SAIL_DATE, 'PORT_CODE', @LEFT_PORT_CODE)
 				SET @LEFT_excursionRowCount = RowCount(@LEFT_excursionRows)
 				SET @LEFT_ACTIVE_EXCURSION = ""
 				SET @LEFT_HAS_EXCURSIONS = "FALSE"
@@ -106,7 +115,7 @@ IF @rowCount > 0 THEN
 				SET @RIGHT_PORT_CODE = Field(@currentRow, 'PORT_OF_CALL')
 
 				/* Lookup ACTIVE EXCURSIONS by consumer + ship + sail date + port code */
-				SET @RIGHT_excursionRows = LookupRows('SHOREX_Excursions_Lookup', 'CONSUMER_ID', @CONSUMER_ID, 'SHIP_CODE', @RIGHT_SHIP_CODE, 'SAIL_DATE', @RIGHT_SAIL_DATE, 'PORT_CODE', @RIGHT_PORT_CODE)
+				SET @RIGHT_excursionRows = LookupRows('SHOREX_Excursions_Lookup', 'CONSUMER_ID', @SHOREX_CONSUMER_ID, 'SHIP_CODE', @RIGHT_SHIP_CODE, 'SAIL_DATE', @RIGHT_SAIL_DATE, 'PORT_CODE', @RIGHT_PORT_CODE)
 				SET @RIGHT_excursionRowCount = RowCount(@RIGHT_excursionRows)
 				SET @RIGHT_ACTIVE_EXCURSION = ""
 				SET @RIGHT_HAS_EXCURSIONS = "FALSE"
