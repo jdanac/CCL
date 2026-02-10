@@ -65,9 +65,23 @@ IF @rowCount > 0 THEN
 					ENDIF
 				ENDIF
 
-				/* Lookup image using shipCode + sailDate + day */
+				/* Extract first excursion ID (if present) for image match */
+				SET @LEFT_EXCURSION_ID = ""
+				IF NOT EMPTY(@LEFT_ACTIVE_EXCURSION) THEN
+					SET @LEFT_excursionIdRowset = BuildRowsetFromString(@LEFT_ACTIVE_EXCURSION, '|')
+					IF RowCount(@LEFT_excursionIdRowset) > 0 THEN
+						SET @LEFT_excursionIdRow = Row(@LEFT_excursionIdRowset, 1)
+						SET @LEFT_EXCURSION_ID = Field(@LEFT_excursionIdRow, 1)
+					ENDIF
+				ENDIF
+
+				/* Lookup image using shipCode + sailDate + day (+ id when available) */
 				
-                SET @LEFT_imageRows = LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @LEFT_SHIP_CODE, 'sailDate', @LEFT_SAIL_DATE, 'day', @LEFT_ITINERARY_DAY_NBR)
+				IF NOT EMPTY(@LEFT_EXCURSION_ID) THEN
+					SET @LEFT_imageRows = LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @LEFT_SHIP_CODE, 'sailDate', @LEFT_SAIL_DATE, 'day', @LEFT_ITINERARY_DAY_NBR, 'ID', @LEFT_EXCURSION_ID)
+				ELSE
+					SET @LEFT_imageRows = LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @LEFT_SHIP_CODE, 'sailDate', @LEFT_SAIL_DATE, 'day', @LEFT_ITINERARY_DAY_NBR)
+				ENDIF
                 SET @LEFT_imageRowCount = RowCount(@LEFT_imageRows)
                 SET @LEFT_PORT_IMAGE = ""
                 IF @LEFT_imageRowCount > 0 THEN
@@ -104,9 +118,23 @@ IF @rowCount > 0 THEN
 					ENDIF
 				ENDIF
 
-				/* Lookup image using shipCode + sailDate + day */
+				/* Extract first excursion ID (if present) for image match */
+				SET @RIGHT_EXCURSION_ID = ""
+				IF NOT EMPTY(@RIGHT_ACTIVE_EXCURSION) THEN
+					SET @RIGHT_excursionIdRowset = BuildRowsetFromString(@RIGHT_ACTIVE_EXCURSION, '|')
+					IF RowCount(@RIGHT_excursionIdRowset) > 0 THEN
+						SET @RIGHT_excursionIdRow = Row(@RIGHT_excursionIdRowset, 1)
+						SET @RIGHT_EXCURSION_ID = Field(@RIGHT_excursionIdRow, 1)
+					ENDIF
+				ENDIF
+
+				/* Lookup image using shipCode + sailDate + day (+ id when available) */
 				
-                SET @RIGHT_imageRows = LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @RIGHT_SHIP_CODE, 'sailDate', @RIGHT_SAIL_DATE, 'day', @RIGHT_ITINERARY_DAY_NBR)
+				IF NOT EMPTY(@RIGHT_EXCURSION_ID) THEN
+					SET @RIGHT_imageRows = LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @RIGHT_SHIP_CODE, 'sailDate', @RIGHT_SAIL_DATE, 'day', @RIGHT_ITINERARY_DAY_NBR, 'ID', @RIGHT_EXCURSION_ID)
+				ELSE
+					SET @RIGHT_imageRows = LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @RIGHT_SHIP_CODE, 'sailDate', @RIGHT_SAIL_DATE, 'day', @RIGHT_ITINERARY_DAY_NBR)
+				ENDIF
                 SET @RIGHT_imageRowCount = RowCount(@RIGHT_imageRows)
                 SET @RIGHT_PORT_IMAGE = ""
                 IF @RIGHT_imageRowCount > 0 THEN
