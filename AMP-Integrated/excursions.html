@@ -33,21 +33,29 @@ SET @MCC_link = Concat('https://www.celebritycruises.com/account/cruise-planner/
 /* Check if we have any excursion data to display */
 IF @rowCount > 0 THEN
     
+    /* PRE-CHECK: Is Day 1 available in GraphiQL for this sailing? */
+    SET @day1Check = LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @SHIP_CODE, 'sailDate', @SHIP_DEPARTURE_DATE, 'day', 1)
+    SET @SKIP_DAY_1 = IIF(RowCount(@day1Check) == 0, "TRUE", "FALSE")
+    
     /* Initialize pending day tracker */
     SET @PENDING_DAY = ""
     
     /* Loop through ALL rows sequentially */
     FOR @i = 1 TO @rowCount DO
 		SET @currentRow = Row(@rows, @i)
-		SET @CURRENT_PORT_NAME = Field(@currentRow, 'PORT_OF_CALL_NAME')
-        
-        /* Clean port name */
-        IF indexOf(@CURRENT_PORT_NAME, ",") > 0 THEN
-            SET @CURRENT_PORT_NAME = Substring(@CURRENT_PORT_NAME, 1, Subtract(IndexOf(@CURRENT_PORT_NAME, ","), 1))
-        ENDIF
-        SET @CURRENT_PORT_NAME = Trim(Uppercase(@CURRENT_PORT_NAME))
-        
-        /* ========== FILTER: Skip AT SEA days ========== */
+		SET @CURRENT_ITINERARY_DAY_NBR = Field(@currentRow, 'ITINERARY_DAY_NBR')
+		
+		/* Skip Day 1 ONLY if it's not available in GraphiQL */
+		IF NOT (@CURRENT_ITINERARY_DAY_NBR == 1 AND @SKIP_DAY_1 == "TRUE") THEN
+			SET @CURRENT_PORT_NAME = Field(@currentRow, 'PORT_OF_CALL_NAME')
+			
+			/* Clean port name */
+			IF indexOf(@CURRENT_PORT_NAME, ",") > 0 THEN
+				SET @CURRENT_PORT_NAME = Substring(@CURRENT_PORT_NAME, 1, Subtract(IndexOf(@CURRENT_PORT_NAME, ","), 1))
+			ENDIF
+			SET @CURRENT_PORT_NAME = Trim(Uppercase(@CURRENT_PORT_NAME))
+			
+			/* ========== FILTER: Skip AT SEA days ========== */
         IF @CURRENT_PORT_NAME != "AT SEA" THEN
             /* This is a port day */
             
@@ -331,6 +339,7 @@ IF @rowCount > 0 THEN
                 SET @PENDING_DAY = ""
             ENDIF
         ENDIF
+		ENDIF
     NEXT @i
 ENDIF
 ]%%
