@@ -33,10 +33,6 @@ SET @MCC_link = Concat('https://www.celebritycruises.com/account/cruise-planner/
 /* Check if we have any excursion data to display */
 IF @rowCount > 0 THEN
     
-    /* PRE-CHECK: Is Day 1 available in GraphiQL for this sailing? */
-    SET @day1Check = LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @SHIP_CODE, 'sailDate', @SHIP_DEPARTURE_DATE, 'day', 1)
-    SET @SKIP_DAY_1 = IIF(RowCount(@day1Check) == 0, "TRUE", "FALSE")
-    
     /* Initialize pending day tracker */
     SET @PENDING_DAY = ""
     
@@ -45,8 +41,11 @@ IF @rowCount > 0 THEN
 		SET @currentRow = Row(@rows, @i)
 		SET @CURRENT_ITINERARY_DAY_NBR = Field(@currentRow, 'ITINERARY_DAY_NBR')
 		
-		/* Skip Day 1 ONLY if it's not available in GraphiQL */
-		IF NOT (@CURRENT_ITINERARY_DAY_NBR == 1 AND @SKIP_DAY_1 == "TRUE") THEN
+		/* Check if GraphiQL has image data for THIS specific day */
+		SET @dayHasImage = LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @SHIP_CODE, 'sailDate', @SHIP_DEPARTURE_DATE, 'day', @CURRENT_ITINERARY_DAY_NBR)
+		
+		/* Only process days that have images available in GraphiQL */
+		IF RowCount(@dayHasImage) > 0 THEN
 			SET @CURRENT_PORT_NAME = Field(@currentRow, 'PORT_OF_CALL_NAME')
 			
 			/* Clean port name */
