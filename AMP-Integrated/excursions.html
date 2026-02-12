@@ -41,7 +41,7 @@ IF @rowCount > 0 THEN
 		SET @currentRow = Row(@rows, @i)
 		SET @CURRENT_ITINERARY_DAY_NBR = Field(@currentRow, 'ITINERARY_DAY_NBR')
 		
-		/* Check if GraphiQL has image data for THIS specific day */
+		/* Check if GraphiQL DE has image data for THIS specific day */
 		SET @dayHasImage = LookupRows('SHOREX_GraphiQL_Products', 'shipCode', @SHIP_CODE, 'sailDate', @SHIP_DEPARTURE_DATE, 'day', @CURRENT_ITINERARY_DAY_NBR)
 		
 		/* Only process days that have images available in GraphiQL */
