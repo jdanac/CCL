@@ -1,0 +1,223 @@
+%%[
+SET @SHIP_DEPARTURE_DATE = @DEPARTURE_DATE_FUTURE
+
+SET @ship_title_1 = 'Title'
+SET @ship_path_1 = 'https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/3a19e7ad-62a5-4ac7-b22e-b998f5b55911.png'
+SET @ship_desc_1 = 'Discover experiences available on board during your sea day.'
+
+SET @ship_title_2 = 'Title'
+SET @ship_path_2 = 'https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/3a19e7ad-62a5-4ac7-b22e-b998f5b55911.png'
+SET @ship_desc_2 = 'Discover experiences available on board during your sea day.'
+
+SET @ship_title_3 = 'Title'
+SET @ship_path_3 = 'https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/3a19e7ad-62a5-4ac7-b22e-b998f5b55911.png'
+SET @ship_desc_3 = 'Discover experiences available on board during your sea day.'
+
+SET @shipExcursionRowCount = 0
+IF NOT EMPTY(@SHIP_CODE) AND NOT EMPTY(@SHIP_DEPARTURE_DATE) THEN
+	SET @shipExcursionRows = LookupRows('SHIPEXCURSIONS_GraphiQL_Products', 'shipCode', @SHIP_CODE, 'sailDate', @SHIP_DEPARTURE_DATE)
+	SET @shipExcursionRowCount = RowCount(@shipExcursionRows)
+ENDIF
+
+IF @shipExcursionRowCount > 0 THEN
+	SET @shipRow_1 = Row(@shipExcursionRows, 1)
+	SET @ship_title_1 = Field(@shipRow_1, 'TITLE')
+	SET @ship_path_1 = Field(@shipRow_1, 'PATH')
+	SET @ship_desc_1 = Field(@shipRow_1, 'DESCRIPTION')
+ENDIF
+
+IF @shipExcursionRowCount > 1 THEN
+	SET @shipRow_2 = Row(@shipExcursionRows, 2)
+	SET @ship_title_2 = Field(@shipRow_2, 'TITLE')
+	SET @ship_path_2 = Field(@shipRow_2, 'PATH')
+	SET @ship_desc_2 = Field(@shipRow_2, 'DESCRIPTION')
+ENDIF
+
+IF @shipExcursionRowCount > 2 THEN
+	SET @shipRow_3 = Row(@shipExcursionRows, 3)
+	SET @ship_title_3 = Field(@shipRow_3, 'TITLE')
+	SET @ship_path_3 = Field(@shipRow_3, 'PATH')
+	SET @ship_desc_3 = Field(@shipRow_3, 'DESCRIPTION')
+ENDIF
+]%%
+
+<!-- ====== SEA DAY ACTIVITIES COMPONENT ====== -->
+<!-- Title -->
+<table cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" role="presentation" style="margin: 0 auto; background-color: #002859;">
+	<tr>
+		<td class="mobile-padding-0-40" align="left" style="padding: 20px 30px 10px 30px;">
+			<table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
+				<tr>
+					<td align="left" style="font-family: 'Poppins', Arial, sans-serif; font-size: 25px; line-height: 32px; color: #ffffff; padding: 0; font-weight: 700;">Sea Day Activities</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!-- Activity Row 1 -->
+<!-- Image + Copy (left/right layout) -->
+<table cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" role="presentation" style="margin: 0 auto; background-color: #002859;">
+	<tr>
+		<td style="padding: 10px 0 0 0;">
+			<table cellspacing="0" cellpadding="0" role="presentation" style="width: 100%; background-color: #002859;">
+				<tr>
+					<td valign="middle" class="responsive-td" style="width: 50%; padding: 10px 10px 10px 20px;">
+						<table width="100%" cellspacing="0" cellpadding="0" role="presentation">
+							<tr>
+								<td class="mobile-padding-0-40" align="left">
+									<img src="%%=v(@ship_path_1)=%%" alt="Sea day activity" width="248" style="display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;">
+								</td>
+							</tr>
+						</table>
+					</td>
+
+					<td valign="middle" class="responsive-td" style="width: 50%; padding-left: 0px;">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #002859;">
+							<tr>
+								<td class="mobile-padding-0-40 textC" style="padding: 10px 20px 0" align="left">
+									<span style="font-size: 17px; line-height: 22px; font-family: 'Poppins', Arial, sans-serif;font-weight: 700; color: #ffffff;">%%=v(@ship_title_1)=%%</span>
+								</td>
+							</tr>
+						</table>
+                        <!-- Copy -->
+						<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #002859;">
+							<tr>
+								<td class="mobile-padding-0-40 textC" style="padding: 5px 20px 0 20px;" align="left">
+									<span style="font-size: 15px; line-height: 26px; font-family: 'Poppins', Arial, sans-serif; color: #ffffff;">%%=v(@ship_desc_1)=%%</span>
+								</td>
+							</tr>
+						</table>
+                       <!-- CTA button-->
+						<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #002859;">
+							<tr>
+								<td style="padding: 10px 20px;" class="mobile-padding-0-40">
+									<!--table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
+										<tr>
+											<td class="button-cell" bgcolor="#E87434" style="border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; background-color: #E87434;">
+												<a target="_blank" class="buttonstyles" href="https://click.na.celebritycruises.com/?qs=1eca359fc3d421114376de507176ba6cc700ad6b81d049c1210bfc7f7226ad1b317c4ba313330d968acfcf45b5c9bcb8696a56d24311a3c3e0e288bd5da89eb2" title="BOOK NOW" style="background: #E87434; border: 1px solid #E87434; padding: 8px 20px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">BOOK NOW</a>
+											</td>
+										</tr>
+									</table-->
+								</td>
+							</tr>
+						</table>
+				
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!-- Activity Row 2 -->
+<!-- Image + Copy (left/right layout) -->
+<table cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" role="presentation" style="margin: 0 auto; background-color: #002859;">
+	<tr>
+		<td style="padding: 10px 0 0 0;">
+			<table cellspacing="0" cellpadding="0" role="presentation" style="width: 100%; background-color: #002859;">
+				<tr>
+					<td valign="middle" class="responsive-td" style="width: 50%; padding: 10px 10px 10px 20px;">
+						<table width="100%" cellspacing="0" cellpadding="0" role="presentation">
+							<tr>
+								<td class="mobile-padding-0-40" align="left">
+									<img src="%%=v(@ship_path_2)=%%" alt="Sea day activity" width="248" style="display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;">
+								</td>
+							</tr>
+						</table>
+					</td>
+
+					<td valign="middle" class="responsive-td" style="width: 50%; padding-left: 0px;">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #002859;">
+							<tr>
+								<td class="mobile-padding-0-40 textC" style="padding: 10px 20px 0" align="left">
+									<span style="font-size: 17px; line-height: 22px; font-family: 'Poppins', Arial, sans-serif;font-weight: 700; color: #ffffff;">%%=v(@ship_title_2)=%%</span>
+								</td>
+							</tr>
+						</table>
+                        <!-- Copy -->
+						<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #002859;">
+							<tr>
+								<td class="mobile-padding-0-40 textC" style="padding: 5px 20px 0 20px;" align="left">
+									<span style="font-size: 15px; line-height: 26px; font-family: 'Poppins', Arial, sans-serif; color: #ffffff;">%%=v(@ship_desc_2)=%%</span>
+								</td>
+							</tr>
+						</table>
+                       <!-- CTA button-->
+						<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #002859;">
+							<tr>
+								<td style="padding: 10px 20px;" class="mobile-padding-0-40">
+									<!--table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
+										<tr>
+											<td class="button-cell" bgcolor="#E87434" style="border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; background-color: #E87434;">
+												<a target="_blank" class="buttonstyles" href="https://click.na.celebritycruises.com/?qs=1eca359fc3d421114376de507176ba6cc700ad6b81d049c1210bfc7f7226ad1b317c4ba313330d968acfcf45b5c9bcb8696a56d24311a3c3e0e288bd5da89eb2" title="BOOK NOW" style="background: #E87434; border: 1px solid #E87434; padding: 8px 20px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">BOOK NOW</a>
+											</td>
+										</tr>
+									</table-->
+								</td>
+							</tr>
+						</table>
+				
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!-- Activity Row 3 -->
+<!-- Image + Copy (left/right layout) -->
+<table cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" role="presentation" style="margin: 0 auto; background-color: #002859;">
+	<tr>
+		<td style="padding: 10px 0 10px 0;">
+			<table cellspacing="0" cellpadding="0" role="presentation" style="width: 100%; background-color: #002859;">
+				<tr>
+					<td valign="middle" class="responsive-td" style="width: 50%; padding: 10px 10px 10px 20px;">
+						<table width="100%" cellspacing="0" cellpadding="0" role="presentation">
+							<tr>
+								<td class="mobile-padding-0-40" align="left">
+									<img src="%%=v(@ship_path_3)=%%" alt="Sea day activity" width="248" style="display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;">
+								</td>
+							</tr>
+						</table>
+					</td>
+
+					<td valign="middle" class="responsive-td" style="width: 50%; padding-left: 0px;">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #002859;">
+							<tr>
+								<td class="mobile-padding-0-40 textC" style="padding: 10px 20px 0" align="left">
+									<span style="font-size: 17px; line-height: 22px; font-family: 'Poppins', Arial, sans-serif;font-weight: 700; color: #ffffff;">%%=v(@ship_title_3)=%%</span>
+								</td>
+							</tr>
+						</table>
+                        <!-- Copy -->
+						<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #002859;">
+							<tr>
+								<td class="mobile-padding-0-40 textC" style="padding: 5px 20px 0 20px;" align="left">
+									<span style="font-size: 15px; line-height: 26px; font-family: 'Poppins', Arial, sans-serif; color: #ffffff;">%%=v(@ship_desc_3)=%%</span>
+								</td>
+							</tr>
+						</table>
+                       <!-- CTA button-->
+						<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #002859;">
+							<tr>
+								<td style="padding: 10px 20px 20px;" class="mobile-padding-0-40">
+									<!--table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
+										<tr>
+											<td class="button-cell" bgcolor="#E87434" style="border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; background-color: #E87434;">
+												<a target="_blank" class="buttonstyles" href="https://click.na.celebritycruises.com/?qs=1eca359fc3d421114376de507176ba6cc700ad6b81d049c1210bfc7f7226ad1b317c4ba313330d968acfcf45b5c9bcb8696a56d24311a3c3e0e288bd5da89eb2" title="BOOK NOW" style="background: #E87434; border: 1px solid #E87434; padding: 8px 20px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">BOOK NOW</a>
+											</td>
+										</tr>
+									</table-->
+								</td>
+							</tr>
+						</table>
+				
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!-- ====== END SEA DAY ACTIVITIES COMPONENT ====== -->
