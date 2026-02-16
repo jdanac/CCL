@@ -1,47 +1,79 @@
 %%[
-SET @SHIP_DEPARTURE_DATE = @DEPARTURE_DATE_FUTURE
+/* ===== TESTING ONLY: Hard-coded lookup parameters ===== */
+SET @SHIPEX_CODE = 'BY'
+SET @SHIPEX_DEPARTURE_DATE = '3/15/2026 12:00:00 AM'
+/* ===== END TESTING ONLY - REMOVE when using dynamic values ===== */
 
-SET @ship_title_1 = 'Title'
-SET @ship_path_1 = 'https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/3a19e7ad-62a5-4ac7-b22e-b998f5b55911.png'
-SET @ship_desc_1 = 'Discover experiences available on board during your sea day.'
+/* Initialize default values for all three activity rows */
+SET @SHIPEX_title_1 = 'Title 1'
+SET @SHIPEX_path_1 = 'https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/3a19e7ad-62a5-4ac7-b22e-b998f5b55911.png'
+SET @SHIPEX_desc_1 = 'Discover experiences available on board during your sea day.'
 
-SET @ship_title_2 = 'Title'
-SET @ship_path_2 = 'https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/3a19e7ad-62a5-4ac7-b22e-b998f5b55911.png'
-SET @ship_desc_2 = 'Discover experiences available on board during your sea day.'
+SET @SHIPEX_title_2 = 'Title 2'
+SET @SHIPEX_path_2 = 'https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/3a19e7ad-62a5-4ac7-b22e-b998f5b55911.png'
+SET @SHIPEX_desc_2 = 'Discover experiences available on board during your sea day.'
 
-SET @ship_title_3 = 'Title'
-SET @ship_path_3 = 'https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/3a19e7ad-62a5-4ac7-b22e-b998f5b55911.png'
-SET @ship_desc_3 = 'Discover experiences available on board during your sea day.'
+SET @SHIPEX_title_3 = 'Title 3'
+SET @SHIPEX_path_3 = 'https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/3a19e7ad-62a5-4ac7-b22e-b998f5b55911.png'
+SET @SHIPEX_desc_3 = 'Discover experiences available on board during your sea day.'
 
+/* Build link to ship excursions booking page */
+SET @SHIPEX_link = Concat('https://www.celebritycruises.com/account/cruise-planner/category/shipexcursions?bookingId=', @BOOKING_ID, '&shipCode=', @SHIPEX_CODE, '&sailDate=', FormatDate(@SHIPEX_DEPARTURE_DATE, 'YYYYMMdd'), '&currencyCode=', @CURRENCY_CODE)
+
+/* Validate ship code and sail date, then query DE for ship excursion products */
 SET @shipExcursionRowCount = 0
-IF NOT EMPTY(@SHIP_CODE) AND NOT EMPTY(@SHIP_DEPARTURE_DATE) THEN
-	SET @shipExcursionRows = LookupRows('SHIPEXCURSIONS_GraphiQL_Products', 'shipCode', @SHIP_CODE, 'sailDate', @SHIP_DEPARTURE_DATE)
+IF NOT EMPTY(@SHIPEX_CODE) AND NOT EMPTY(@SHIPEX_DEPARTURE_DATE) THEN
+	SET @shipExcursionRows = LookupRows('SHIPEXCURSIONS_GraphiQL_Products', 'shipCode', @SHIPEX_CODE, 'sailDate', @SHIPEX_DEPARTURE_DATE)
 	SET @shipExcursionRowCount = RowCount(@shipExcursionRows)
 ENDIF
 
+/* Extract data for Activity Row 1 and truncate description at first period */
 IF @shipExcursionRowCount > 0 THEN
 	SET @shipRow_1 = Row(@shipExcursionRows, 1)
-	SET @ship_title_1 = Field(@shipRow_1, 'TITLE')
-	SET @ship_path_1 = Field(@shipRow_1, 'PATH')
-	SET @ship_desc_1 = Field(@shipRow_1, 'DESCRIPTION')
+	SET @SHIPEX_title_1 = Field(@shipRow_1, 'TITLE')
+	SET @SHIPEX_path_1 = Field(@shipRow_1, 'PATH')
+	SET @SHIPEX_desc_1_full = Field(@shipRow_1, 'DESCRIPTION')
+	SET @periodPos_1 = IndexOf(@SHIPEX_desc_1_full, '.')
+	IF @periodPos_1 > 0 THEN
+		SET @SHIPEX_desc_1 = Substring(@SHIPEX_desc_1_full, 1, @periodPos_1)
+	ELSE
+		SET @SHIPEX_desc_1 = @SHIPEX_desc_1_full
+	ENDIF
 ENDIF
 
+/* Extract data for Activity Row 2 and truncate description at first period */
 IF @shipExcursionRowCount > 1 THEN
 	SET @shipRow_2 = Row(@shipExcursionRows, 2)
-	SET @ship_title_2 = Field(@shipRow_2, 'TITLE')
-	SET @ship_path_2 = Field(@shipRow_2, 'PATH')
-	SET @ship_desc_2 = Field(@shipRow_2, 'DESCRIPTION')
+	SET @SHIPEX_title_2 = Field(@shipRow_2, 'TITLE')
+	SET @SHIPEX_path_2 = Field(@shipRow_2, 'PATH')
+	SET @SHIPEX_desc_2_full = Field(@shipRow_2, 'DESCRIPTION')
+	SET @periodPos_2 = IndexOf(@SHIPEX_desc_2_full, '.')
+	IF @periodPos_2 > 0 THEN
+		SET @SHIPEX_desc_2 = Substring(@SHIPEX_desc_2_full, 1, @periodPos_2)
+	ELSE
+		SET @SHIPEX_desc_2 = @SHIPEX_desc_2_full
+	ENDIF
 ENDIF
 
+/* Extract data for Activity Row 3 and truncate description at first period */
 IF @shipExcursionRowCount > 2 THEN
 	SET @shipRow_3 = Row(@shipExcursionRows, 3)
-	SET @ship_title_3 = Field(@shipRow_3, 'TITLE')
-	SET @ship_path_3 = Field(@shipRow_3, 'PATH')
-	SET @ship_desc_3 = Field(@shipRow_3, 'DESCRIPTION')
+	SET @SHIPEX_title_3 = Field(@shipRow_3, 'TITLE')
+	SET @SHIPEX_path_3 = Field(@shipRow_3, 'PATH')
+	SET @SHIPEX_desc_3_full = Field(@shipRow_3, 'DESCRIPTION')
+	SET @periodPos_3 = IndexOf(@SHIPEX_desc_3_full, '.')
+	IF @periodPos_3 > 0 THEN
+		SET @SHIPEX_desc_3 = Substring(@SHIPEX_desc_3_full, 1, @periodPos_3)
+	ELSE
+		SET @SHIPEX_desc_3 = @SHIPEX_desc_3_full
+	ENDIF
 ENDIF
 ]%%
 
 <!-- ====== SEA DAY ACTIVITIES COMPONENT ====== -->
+<table cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" role="presentation" style="margin: 0 auto; background-color: #002859;">
+	<tr>
+        <td>
 <!-- Title -->
 <table cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" role="presentation" style="margin: 0 auto; background-color: #002859;">
 	<tr>
@@ -66,7 +98,7 @@ ENDIF
 						<table width="100%" cellspacing="0" cellpadding="0" role="presentation">
 							<tr>
 								<td class="mobile-padding-0-40" align="left">
-									<img src="%%=v(@ship_path_1)=%%" alt="Sea day activity" width="248" style="display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;">
+									<img src="%%=v(@SHIPEX_path_1)=%%" alt="Sea day activity" width="248" style="display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;">
 								</td>
 							</tr>
 						</table>
@@ -76,7 +108,7 @@ ENDIF
 						<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #002859;">
 							<tr>
 								<td class="mobile-padding-0-40 textC" style="padding: 10px 20px 0" align="left">
-									<span style="font-size: 17px; line-height: 22px; font-family: 'Poppins', Arial, sans-serif;font-weight: 700; color: #ffffff;">%%=v(@ship_title_1)=%%</span>
+									<span style="font-size: 17px; line-height: 22px; font-family: 'Poppins', Arial, sans-serif;font-weight: 700; color: #ffffff;">%%=v(@SHIPEX_title_1)=%%</span>
 								</td>
 							</tr>
 						</table>
@@ -84,7 +116,7 @@ ENDIF
 						<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #002859;">
 							<tr>
 								<td class="mobile-padding-0-40 textC" style="padding: 5px 20px 0 20px;" align="left">
-									<span style="font-size: 15px; line-height: 26px; font-family: 'Poppins', Arial, sans-serif; color: #ffffff;">%%=v(@ship_desc_1)=%%</span>
+									<span style="font-size: 15px; line-height: 26px; font-family: 'Poppins', Arial, sans-serif; color: #ffffff;">%%=v(@SHIPEX_desc_1)=%%</span>
 								</td>
 							</tr>
 						</table>
@@ -121,7 +153,7 @@ ENDIF
 						<table width="100%" cellspacing="0" cellpadding="0" role="presentation">
 							<tr>
 								<td class="mobile-padding-0-40" align="left">
-									<img src="%%=v(@ship_path_2)=%%" alt="Sea day activity" width="248" style="display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;">
+									<img src="%%=v(@SHIPEX_path_2)=%%" alt="Sea day activity" width="248" style="display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;">
 								</td>
 							</tr>
 						</table>
@@ -131,7 +163,7 @@ ENDIF
 						<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #002859;">
 							<tr>
 								<td class="mobile-padding-0-40 textC" style="padding: 10px 20px 0" align="left">
-									<span style="font-size: 17px; line-height: 22px; font-family: 'Poppins', Arial, sans-serif;font-weight: 700; color: #ffffff;">%%=v(@ship_title_2)=%%</span>
+									<span style="font-size: 17px; line-height: 22px; font-family: 'Poppins', Arial, sans-serif;font-weight: 700; color: #ffffff;">%%=v(@SHIPEX_title_2)=%%</span>
 								</td>
 							</tr>
 						</table>
@@ -139,7 +171,7 @@ ENDIF
 						<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #002859;">
 							<tr>
 								<td class="mobile-padding-0-40 textC" style="padding: 5px 20px 0 20px;" align="left">
-									<span style="font-size: 15px; line-height: 26px; font-family: 'Poppins', Arial, sans-serif; color: #ffffff;">%%=v(@ship_desc_2)=%%</span>
+									<span style="font-size: 15px; line-height: 26px; font-family: 'Poppins', Arial, sans-serif; color: #ffffff;">%%=v(@SHIPEX_desc_2)=%%</span>
 								</td>
 							</tr>
 						</table>
@@ -176,7 +208,7 @@ ENDIF
 						<table width="100%" cellspacing="0" cellpadding="0" role="presentation">
 							<tr>
 								<td class="mobile-padding-0-40" align="left">
-									<img src="%%=v(@ship_path_3)=%%" alt="Sea day activity" width="248" style="display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;">
+									<img src="%%=v(@SHIPEX_path_3)=%%" alt="Sea day activity" width="248" style="display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;">
 								</td>
 							</tr>
 						</table>
@@ -186,7 +218,7 @@ ENDIF
 						<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #002859;">
 							<tr>
 								<td class="mobile-padding-0-40 textC" style="padding: 10px 20px 0" align="left">
-									<span style="font-size: 17px; line-height: 22px; font-family: 'Poppins', Arial, sans-serif;font-weight: 700; color: #ffffff;">%%=v(@ship_title_3)=%%</span>
+									<span style="font-size: 17px; line-height: 22px; font-family: 'Poppins', Arial, sans-serif;font-weight: 700; color: #ffffff;">%%=v(@SHIPEX_title_3)=%%</span>
 								</td>
 							</tr>
 						</table>
@@ -194,7 +226,7 @@ ENDIF
 						<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #002859;">
 							<tr>
 								<td class="mobile-padding-0-40 textC" style="padding: 5px 20px 0 20px;" align="left">
-									<span style="font-size: 15px; line-height: 26px; font-family: 'Poppins', Arial, sans-serif; color: #ffffff;">%%=v(@ship_desc_3)=%%</span>
+									<span style="font-size: 15px; line-height: 26px; font-family: 'Poppins', Arial, sans-serif; color: #ffffff;">%%=v(@SHIPEX_desc_3)=%%</span>
 								</td>
 							</tr>
 						</table>
@@ -218,6 +250,23 @@ ENDIF
 			</table>
 		</td>
 	</tr>
+</table>
+
+<table cellpadding="0" cellspacing="0" border="0" align="center" width="600" class="container" role="presentation" style="margin: 0 auto;">
+    <tr>
+        <td class="mobile-padding-0-40" align="center" style="padding: 10px 24px 20px;">
+           	<table border="0" cellspacing="0" cellpadding="0" role="presentation" width="100%">
+										<tr>
+											<td width="100%" class="button-cell-full" bgcolor="#e87435" style="border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; background-color: #e87435;text-align: center;">
+												<a target="_blank" class="buttonstyles" href="%%=RedirectTo(@SHIPEX_link)=%%" title="SEE ALL ACTIVITIES" style="background: #e87435; border: 1px solid #e87435; padding: 8px 26px; color: #ffffff; font-family: 'Poppins', Arial, sans-serif; font-size: 15px; line-height: 1.1; font-weight:700; text-align: center; text-decoration: none; display: inline-block; border-radius: 10px; -webkit-border-radius: 10px;">SEE ALL ACTIVITIES</a>
+											</td>
+										</tr>
+									</table>
+        </td>
+    </tr>
+</table>
+        </td> 
+    </tr>
 </table>
 
 <!-- ====== END SEA DAY ACTIVITIES COMPONENT ====== -->
