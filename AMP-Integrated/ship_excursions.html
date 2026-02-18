@@ -1,7 +1,7 @@
 %%[
 /* ===== TESTING ONLY: Hard-coded lookup parameters ===== */
-SET @SHIPEX_CODE = 'BY'
-SET @SHIPEX_DEPARTURE_DATE = '3/15/2026 12:00:00 AM'
+SET @SHIPEX_CODE = 'XC'
+SET @SHIPEX_DEPARTURE_DATE = '3/28/2027 12:00:00 AM'
 /* ===== END TESTING ONLY - REMOVE when using dynamic values ===== */
 
 /* Initialize default values for all three activity rows */
@@ -27,47 +27,56 @@ IF NOT EMPTY(@SHIPEX_CODE) AND NOT EMPTY(@SHIPEX_DEPARTURE_DATE) THEN
 	SET @shipExcursionRowCount = RowCount(@shipExcursionRows)
 ENDIF
 
-/* Extract data for Activity Row 1 and truncate description at first period */
+/* ===== LOOP & FILTER OUT-OF-STOCK ITEMS ===== */
+
+SET @displayCount = 0
 IF @shipExcursionRowCount > 0 THEN
-	SET @shipRow_1 = Row(@shipExcursionRows, 1)
-	SET @SHIPEX_title_1 = Field(@shipRow_1, 'TITLE')
-	SET @SHIPEX_path_1 = Field(@shipRow_1, 'PATH')
-	SET @SHIPEX_desc_1_full = Field(@shipRow_1, 'DESCRIPTION')
-	SET @periodPos_1 = IndexOf(@SHIPEX_desc_1_full, '.')
-	IF @periodPos_1 > 0 THEN
-		SET @SHIPEX_desc_1 = Substring(@SHIPEX_desc_1_full, 1, @periodPos_1)
-	ELSE
-		SET @SHIPEX_desc_1 = @SHIPEX_desc_1_full
-	ENDIF
+	FOR @i = 1 TO @shipExcursionRowCount DO
+		SET @currentRow = Row(@shipExcursionRows, @i)
+		SET @currentStock = Field(@currentRow, 'STOCK')
+		
+		/* Include record if NOT OUT_OF_STOCK (IN_STOCK, LOW_STOCK, etc. are OK) */
+		IF IndexOf(@currentStock, 'OUT_OF_STOCK') == 0 THEN
+			SET @displayCount = Add(@displayCount, 1)
+			
+			/* Extract data for Activity Row 1 */
+			IF @displayCount == 1 THEN
+				SET @SHIPEX_title_1 = Field(@currentRow, 'TITLE')
+				SET @SHIPEX_path_1 = Field(@currentRow, 'PATH')
+				SET @SHIPEX_desc_1_full = Field(@currentRow, 'DESCRIPTION')
+				SET @periodPos_1 = IndexOf(@SHIPEX_desc_1_full, '.')
+				IF @periodPos_1 > 0 THEN
+					SET @SHIPEX_desc_1 = Substring(@SHIPEX_desc_1_full, 1, @periodPos_1)
+				ELSE
+					SET @SHIPEX_desc_1 = @SHIPEX_desc_1_full
+				ENDIF
+			/* Extract data for Activity Row 2 */
+			ELSEIF @displayCount == 2 THEN
+				SET @SHIPEX_title_2 = Field(@currentRow, 'TITLE')
+				SET @SHIPEX_path_2 = Field(@currentRow, 'PATH')
+				SET @SHIPEX_desc_2_full = Field(@currentRow, 'DESCRIPTION')
+				SET @periodPos_2 = IndexOf(@SHIPEX_desc_2_full, '.')
+				IF @periodPos_2 > 0 THEN
+					SET @SHIPEX_desc_2 = Substring(@SHIPEX_desc_2_full, 1, @periodPos_2)
+				ELSE
+					SET @SHIPEX_desc_2 = @SHIPEX_desc_2_full
+				ENDIF
+			/* Extract data for Activity Row 3 */
+			ELSEIF @displayCount == 3 THEN
+				SET @SHIPEX_title_3 = Field(@currentRow, 'TITLE')
+				SET @SHIPEX_path_3 = Field(@currentRow, 'PATH')
+				SET @SHIPEX_desc_3_full = Field(@currentRow, 'DESCRIPTION')
+				SET @periodPos_3 = IndexOf(@SHIPEX_desc_3_full, '.')
+				IF @periodPos_3 > 0 THEN
+					SET @SHIPEX_desc_3 = Substring(@SHIPEX_desc_3_full, 1, @periodPos_3)
+				ELSE
+					SET @SHIPEX_desc_3 = @SHIPEX_desc_3_full
+				ENDIF
+			ENDIF
+		ENDIF
+	NEXT @i
 ENDIF
-
-/* Extract data for Activity Row 2 and truncate description at first period */
-IF @shipExcursionRowCount > 1 THEN
-	SET @shipRow_2 = Row(@shipExcursionRows, 2)
-	SET @SHIPEX_title_2 = Field(@shipRow_2, 'TITLE')
-	SET @SHIPEX_path_2 = Field(@shipRow_2, 'PATH')
-	SET @SHIPEX_desc_2_full = Field(@shipRow_2, 'DESCRIPTION')
-	SET @periodPos_2 = IndexOf(@SHIPEX_desc_2_full, '.')
-	IF @periodPos_2 > 0 THEN
-		SET @SHIPEX_desc_2 = Substring(@SHIPEX_desc_2_full, 1, @periodPos_2)
-	ELSE
-		SET @SHIPEX_desc_2 = @SHIPEX_desc_2_full
-	ENDIF
-ENDIF
-
-/* Extract data for Activity Row 3 and truncate description at first period */
-IF @shipExcursionRowCount > 2 THEN
-	SET @shipRow_3 = Row(@shipExcursionRows, 3)
-	SET @SHIPEX_title_3 = Field(@shipRow_3, 'TITLE')
-	SET @SHIPEX_path_3 = Field(@shipRow_3, 'PATH')
-	SET @SHIPEX_desc_3_full = Field(@shipRow_3, 'DESCRIPTION')
-	SET @periodPos_3 = IndexOf(@SHIPEX_desc_3_full, '.')
-	IF @periodPos_3 > 0 THEN
-		SET @SHIPEX_desc_3 = Substring(@SHIPEX_desc_3_full, 1, @periodPos_3)
-	ELSE
-		SET @SHIPEX_desc_3 = @SHIPEX_desc_3_full
-	ENDIF
-ENDIF
+/* ===== END STOCK FILTERING ===== */
 ]%%
 
 <!-- ====== SEA DAY ACTIVITIES COMPONENT ====== -->
