@@ -1,21 +1,21 @@
 %%[
 /* ===== TESTING ONLY: Hard-coded lookup parameters ===== */
 SET @SHIPEX_CODE = 'XC'
-SET @SHIPEX_DEPARTURE_DATE = '10/2/2026 12:00:00 AM'
+SET @SHIPEX_DEPARTURE_DATE = '1/24/2027 12:00:00 AM'
 /* ===== END TESTING ONLY - REMOVE when using dynamic values ===== */
 
 /* Initialize default values for all three activity rows */
-SET @SHIPEX_title_1 = 'Title 1'
+SET @SHIPEX_title_1 = 'ShipEx Title 1'
 SET @SHIPEX_path_1 = 'https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/3a19e7ad-62a5-4ac7-b22e-b998f5b55911.png'
-SET @SHIPEX_desc_1 = 'Discover experiences available on board during your sea day.'
+SET @SHIPEX_desc_1 = 'TBD.'
 
-SET @SHIPEX_title_2 = 'Title 2'
+SET @SHIPEX_title_2 = 'ShipEx Title 2'
 SET @SHIPEX_path_2 = 'https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/3a19e7ad-62a5-4ac7-b22e-b998f5b55911.png'
-SET @SHIPEX_desc_2 = 'Discover experiences available on board during your sea day.'
+SET @SHIPEX_desc_2 = 'TBD'
 
-SET @SHIPEX_title_3 = 'Title 3'
+SET @SHIPEX_title_3 = 'ShipEx Title 3'
 SET @SHIPEX_path_3 = 'https://image.na.celebritycruises.com/lib/fe31117276640579751279/m/1/3a19e7ad-62a5-4ac7-b22e-b998f5b55911.png'
-SET @SHIPEX_desc_3 = 'Discover experiences available on board during your sea day.'
+SET @SHIPEX_desc_3 = 'TBD'
 
 /* Build link to ship excursions booking page */
 SET @SHIPEX_link = Concat('https://www.celebritycruises.com/account/cruise-planner/category/shipexcursions?bookingId=', @BOOKING_ID, '&shipCode=', @SHIPEX_CODE, '&sailDate=', FormatDate(@SHIPEX_DEPARTURE_DATE, 'YYYYMMdd'), '&currencyCode=', @CURRENCY_CODE)
@@ -234,7 +234,7 @@ ENDIF
                        <!-- CTA button-->
 						<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #002859;">
 							<tr>
-								<td style="padding: 10px 20px 20px;" class="mobile-padding-0-40">
+								<td class="mobile-padding-0-40">
 									&nbsp;
 								</td>
 							</tr>
